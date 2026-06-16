@@ -1103,12 +1103,12 @@ body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;bac
 .modal::-webkit-scrollbar{display:none}
 .modal .btn,.mrow,.wli,.rem-row,.modal .fld input,.modal .fld select,#new-name{border-radius:999px!important}
 .btn-sm{padding-left:1rem!important;padding-right:1rem!important}
-/* thin, subtle page scrollbar (modals stay hidden via .modal rule above) */
-html{scrollbar-width:thin;scrollbar-color:rgba(91,45,142,.32) transparent}
-::-webkit-scrollbar{width:9px;height:9px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:rgba(91,45,142,.3);border-radius:50px;border:2px solid transparent;background-clip:padding-box}
-::-webkit-scrollbar-thumb:hover{background:rgba(91,45,142,.5);background-clip:padding-box}
+/* thin but visible page scrollbar (modals stay hidden via .modal rule above) */
+html{scrollbar-width:thin;scrollbar-color:rgba(91,45,142,.55) rgba(91,45,142,.08)}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:rgba(91,45,142,.08)}
+::-webkit-scrollbar-thumb{background:rgba(91,45,142,.5);border-radius:50px}
+::-webkit-scrollbar-thumb:hover{background:rgba(91,45,142,.7)}
 </style>
 </head>
 <body>
