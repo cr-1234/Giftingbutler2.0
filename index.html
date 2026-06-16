@@ -1773,6 +1773,28 @@ document.getElementById('rem-month').addEventListener('change',populateDays);
     '<div id="recaptcha-container"></div></div></div>';
   (function(){const w=document.createElement('div');w.innerHTML=authHTML;document.body.appendChild(w.firstChild);})();
 
+  // ── Account panel (shown when already signed in) ──
+  const accountHTML=
+    '<div class="ov" id="account-modal" onclick="oc(event,this)"><div class="modal" style="max-width:360px">'+
+    '<button class="mx" onclick="cm(\'account-modal\')">✕</button>'+
+    '<div class="mhd"><div id="acct-avatar" style="width:66px;height:66px;border-radius:50%;margin:0 auto .65rem;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--plum-lt);color:var(--plum);font-weight:600;font-size:1.55rem"></div>'+
+    '<div class="mh2" id="acct-name">Your account</div><p class="msub" id="acct-email"></p></div>'+
+    '<button class="btn btn-ghost btn-full" onclick="gbSignOut()">Sign out</button></div></div>';
+  (function(){const w=document.createElement('div');w.innerHTML=accountHTML;document.body.appendChild(w.firstChild);})();
+  window.gbAccount=function(){
+    const u=auth.currentUser; if(!u)return;
+    const av=document.getElementById('acct-avatar');
+    av.innerHTML=u.photoURL
+      ? '<img src="'+u.photoURL+'" referrerpolicy="no-referrer" alt="" style="width:100%;height:100%;object-fit:cover">'
+      : (u.displayName||u.email||'U').trim().charAt(0).toUpperCase();
+    document.getElementById('acct-name').textContent=u.displayName||'Your account';
+    const prov=(u.providerData&&u.providerData[0]&&u.providerData[0].providerId)||'';
+    const provLabel={'google.com':'Google','password':'Email','phone':'Phone'}[prov]||'';
+    document.getElementById('acct-email').textContent=(u.email||u.phoneNumber||'')+(provLabel?'  ·  via '+provLabel:'');
+    om('account-modal');
+  };
+  window.gbSignOut=function(){ auth.signOut().then(()=>{try{cm('account-modal');}catch(e){}toast('Signed out');}); };
+
   // ── Email / password ──
   let emailMode='signin';
   window.gbToggleMode=function(){
@@ -1827,7 +1849,7 @@ document.getElementById('rem-month').addEventListener('change',populateDays);
 
   // ── Person icon → open modal (or sign out if already in) ──
   window.gbSignIn=function(){
-    if(uid){ if(confirm('Sign out of GiftingButler?')) auth.signOut(); return; }
+    if(uid){ gbAccount(); return; }
     emailMode='signin';
     gbShowEmail();
     document.getElementById('auth-code-box').style.display='none';
