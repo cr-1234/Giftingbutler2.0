@@ -190,9 +190,11 @@ body{font-family:'Inter',sans-serif;background:linear-gradient(165deg,#f3effa 0%
 .gwb h3{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:500;color:#fff;margin-bottom:.22rem}
 .gwb p{font-size:.77rem;color:rgba(255,255,255,.6);margin-bottom:.75rem}
 .ppill{display:inline-flex;align-items:center;gap:.38rem;background:var(--gold);color:#fff;font-size:1.15rem;font-weight:800;padding:.35rem 1.15rem;border-radius:50px;margin-bottom:.7rem}
-.tiers{display:flex;gap:.26rem;justify-content:center;flex-wrap:wrap;margin-bottom:.55rem}
-.tier{font-size:9px;font-weight:700;padding:2px 7px;border-radius:50px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.35);border:1px solid rgba(255,255,255,.1)}
-.tier.lit{background:rgba(255,255,255,.16);color:#fff;border-color:rgba(255,255,255,.3)}
+.tiers{display:flex;gap:.32rem;justify-content:center;flex-wrap:wrap;margin-bottom:.55rem}
+.tier{display:flex;flex-direction:column;align-items:center;gap:1px;line-height:1.05;font-weight:700;padding:3px 9px;border-radius:11px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.42);border:1px solid rgba(255,255,255,.12)}
+.tier .tp{font-size:11px;font-weight:800}
+.tier .tt{font-size:7.5px;font-weight:600;opacity:.85;letter-spacing:.02em;text-transform:uppercase}
+.tier.lit{background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.32)}
 .ec{font-size:.68rem;color:rgba(255,255,255,.45)}.ec strong{color:rgba(255,255,255,.8)}
 .pgbar{height:3px;background:rgba(255,255,255,.1);border-radius:50px;margin-top:.42rem;overflow:hidden}
 .pgfill{height:100%;background:var(--gold);border-radius:50px;transition:width .5s}
@@ -1282,7 +1284,7 @@ body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;bac
 <!-- GIVEAWAY -->
 <div class="ov" id="gw-modal" onclick="oc(event,this)">
   <div class="modal"><button class="mx" onclick="cm('gw-modal')">✕</button>
-    <div class="mhd"><div class="gwb"><div style="font-size:2rem;margin-bottom:.28rem">🎁</div><h3>Weekly Gift Card Giveaway</h3><p>More entries = bigger prize for everyone!</p><div class="ppill">Amazon Gift Card — <span id="prize-lbl">$10</span></div><div class="tiers" id="tier-row"><div class="tier">$5</div><div class="tier">$10 100+</div><div class="tier">$25 250+</div><div class="tier">$50 1K+</div><div class="tier">$75 5K+</div><div class="tier">$100 10K+</div></div><p class="ec"><strong id="ec-num">120</strong> entries this week</p><div class="pgbar"><div class="pgfill" id="pgfill" style="width:12%"></div></div></div></div>
+    <div class="mhd"><div class="gwb"><div style="font-size:2rem;margin-bottom:.28rem">🎁</div><h3>Weekly Gift Card Giveaway</h3><p>More entries = bigger prize for everyone!</p><div class="ppill">Amazon Gift Card — <span id="prize-lbl">$10</span></div><div class="tiers" id="tier-row"><div class="tier"><span class="tp">$5</span><span class="tt">start</span></div><div class="tier"><span class="tp">$10</span><span class="tt">100+</span></div><div class="tier"><span class="tp">$25</span><span class="tt">250+</span></div><div class="tier"><span class="tp">$50</span><span class="tt">1K+</span></div><div class="tier"><span class="tp">$75</span><span class="tt">5K+</span></div><div class="tier"><span class="tp">$100</span><span class="tt">10K+</span></div></div><p class="ec"><strong id="ec-num">120</strong> entries this week</p><div class="pgbar"><div class="pgfill" id="pgfill" style="width:12%"></div></div></div></div>
     <div class="mbd" style="padding-top:.65rem">
       <div id="gw-form"><div class="fld"><label>Your Email</label><input type="email" id="gw-email" placeholder="you@example.com"></div><button class="btn btn-gold btn-full" onclick="submitGW()">🎁 Enter This Week's Giveaway</button><p style="font-size:.67rem;color:var(--ink3);text-align:center;margin-top:.5rem;line-height:1.5">1 entry per week · Winner announced every Sunday</p></div>
       <div id="gw-done" style="display:none;text-align:center;padding:.65rem 0"><div style="font-size:2.3rem;margin-bottom:.4rem">🎉</div><div class="mh2" style="font-size:1.2rem">You're entered!</div><p style="color:var(--ink3);font-size:.78rem;margin-top:.25rem">Winner announced every Sunday. Good luck!</p></div>
@@ -1750,8 +1752,9 @@ document.getElementById('rem-month').addEventListener('change',populateDays);
   const authHTML=
     '<div class="ov" id="auth-modal" onclick="oc(event,this)"><div class="modal" style="max-width:382px">'+
     '<button class="mx" onclick="cm(\'auth-modal\')">✕</button>'+
-    '<div class="mhd"><div class="mico" style="background:var(--plum-lt);font-size:18px">👋</div>'+
-    '<div class="mh2">Sign in to GiftingButler</div><p class="msub">Save your wishlists &amp; reminders across all your devices.</p></div>'+
+    '<div class="mhd" style="text-align:center;padding-bottom:.3rem"><div class="mico" style="background:var(--plum-lt);font-size:20px;margin:0 auto .75rem">👋</div>'+
+    '<div class="mh2">Sign in to GiftingButler</div><p class="msub" style="margin-bottom:0">Save your wishlists &amp; reminders across all your devices.</p></div>'+
+    '<div style="padding:1.3rem 1.7rem 1.7rem">'+
     '<button class="btn btn-plum btn-full" onclick="gbGoogle()" style="display:flex;align-items:center;justify-content:center;gap:.55rem">'+
     '<span style="background:#fff;border-radius:4px;padding:3px;display:inline-flex;line-height:0">'+GOOGLE_G+'</span>Continue with Google</button>'+
     '<div style="display:flex;align-items:center;gap:.6rem;margin:1rem 0;color:var(--ink3);font-size:.72rem"><span style="flex:1;height:1px;background:var(--brd)"></span>or<span style="flex:1;height:1px;background:var(--brd)"></span></div>'+
@@ -1770,7 +1773,7 @@ document.getElementById('rem-month').addEventListener('change',populateDays);
     '<div class="fld"><label>Enter the 6-digit code</label><input type="text" inputmode="numeric" id="auth-code" placeholder="123456"></div>'+
     '<button class="btn btn-plum btn-full" onclick="gbVerifyCode()">Verify &amp; sign in</button></div>'+
     '<p style="text-align:center;margin-top:.85rem"><a href="#" onclick="gbShowEmail();return false" style="color:var(--ink3);font-size:.72rem">← Use email instead</a></p></div>'+
-    '<div id="recaptcha-container"></div></div></div>';
+    '<div id="recaptcha-container"></div></div></div></div>';
   (function(){const w=document.createElement('div');w.innerHTML=authHTML;document.body.appendChild(w.firstChild);})();
 
   // ── Account panel (shown when already signed in) ──
@@ -1863,6 +1866,8 @@ document.getElementById('rem-month').addEventListener('change',populateDays);
     if(!user){ uid=null; renderAuth(null); return; }
     uid=user.uid; renderAuth(user);
     try{cm('auth-modal');}catch(e){}
+    // Pre-fill the giveaway email so signed-in users don't retype it
+    try{const gwE=document.getElementById('gw-email'); if(gwE && user.email && !gwE.value) gwE.value=user.email;}catch(e){}
     userDoc().get().then(function(snap){
       if(snap.exists){
         const d=snap.data()||{};
