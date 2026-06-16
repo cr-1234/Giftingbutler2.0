@@ -1097,10 +1097,12 @@ body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;bac
 .s-ico{width:48px!important;height:48px!important;min-width:48px!important;min-height:48px!important;aspect-ratio:1/1!important;border-radius:50%!important;flex-shrink:0!important}
 .sb-signin{min-width:48px!important;min-height:48px!important;aspect-ratio:1/1!important;flex-shrink:0!important}
 
-/* ── Wishlist modal: single scrollbar + consistent rounded shapes ── */
+/* ── Modal polish: hidden scrollbar + uniform pill shapes ── */
 .wli-list{max-height:none!important;overflow:visible!important}
-.mrow,.wli{border-radius:14px!important}
-.btn-sm{border-radius:50px!important;padding-left:.95rem!important;padding-right:.95rem!important}
+.modal{scrollbar-width:none;-ms-overflow-style:none}
+.modal::-webkit-scrollbar{display:none}
+.modal .btn,.mrow,.wli,.rem-row,.modal .fld input,.modal .fld select,#new-name{border-radius:999px!important}
+.btn-sm{padding-left:1rem!important;padding-right:1rem!important}
 </style>
 </head>
 <body>
@@ -1310,7 +1312,7 @@ body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;bac
         <button type="submit" class="btn btn-plum btn-sm">+ Add</button>
       </form>
       <div id="active-wl" style="display:none">
-        <div class="wls"><div class="wlh"><h3 id="wl-title">Wishlist</h3><button class="btn btn-ghost btn-sm" onclick="shareWL()">↑ Share</button></div>
+        <div class="wls"><div class="wlh"><h3 id="wl-title">Wishlist</h3><button class="btn btn-ghost btn-sm" onclick="shareWL()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:.32rem"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share</button></div>
         <div class="wli-list" id="wl-items"></div>
         <div class="amz-hint">Add items from the following sponsors:<br><a href="https://www.amazon.com/?tag=giftingbutler-20" target="_blank" class="amz-pill">Amazon</a></div>
         <form onsubmit="addWLItem(event)">
