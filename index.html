@@ -1353,7 +1353,7 @@ body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;bac
           <div class="ddesc" id="d-desc"></div>
           <div class="dtags" id="d-tags"></div>
           <div class="dprice" id="d-price"></div>
-          <div class="dacts"><a id="d-buy" href="#" target="_blank" class="btn btn-plum">🛒 Buy Gift</a><button class="btn btn-ghost" onclick="addCurWL()">♥ Save to Wishlist</button></div>
+          <div class="dacts"><a id="d-buy" href="#" target="_blank" class="btn btn-plum">🛒 Buy Gift</a><button class="btn btn-ghost" id="d-save" onclick="dSave()">Save to Wishlist</button></div>
         </div>
       </div>
     </div>
@@ -1511,9 +1511,17 @@ function openDetail(id){
   document.getElementById('d-desc').textContent=p.desc;document.getElementById('d-price').textContent=`$${p.price.toFixed(2)}`;
   document.getElementById('d-buy').href=p.url;
   document.getElementById('d-tags').innerHTML=p.cats.map(c=>`<span class="dtag">${CM[c]?CM[c].label:c}</span>`).join('');
+  updateDSave();
   om('det-modal');
 }
-function addCurWL(){if(curProd){quickAdd(curProd.title,curProd.url);cm('det-modal')}}
+function updateDSave(){
+  if(!curProd)return;const b=document.getElementById('d-save');if(!b)return;
+  const saved=S.get('gb_saved',[]).includes(curProd.id);
+  b.style.color=saved?'var(--rose)':'';b.style.borderColor=saved?'rgba(192,57,90,.5)':'';
+  b.innerHTML='<svg viewBox="0 0 24 24" width="16" height="16" style="vertical-align:-3px;margin-right:.35rem"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="'+(saved?'currentColor':'none')+'" stroke="currentColor" stroke-width="1.9"/></svg>'+(saved?'Saved to Wishlist':'Save to Wishlist');
+}
+function dSave(){if(!curProd)return;toggleSave(curProd.id);updateDSave();}
+function addCurWL(){dSave();}
 
 // ══ WISHLIST ══
 function quickAdd(title,url,silent=false){
