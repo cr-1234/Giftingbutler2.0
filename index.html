@@ -1119,7 +1119,7 @@ body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;bac
       <span class="s-tip">Giveaway</span>
     </button>
   </nav>
-  <button class="sb-signin" onclick="toast('Sign in coming soon!')" title="Sign in">
+  <button class="sb-signin" onclick="gbSignIn()" title="Sign in">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
   </button>
 </aside>
@@ -1642,6 +1642,114 @@ updateGW();
 populateDays();
 document.getElementById('rem-month').addEventListener('change',populateDays);
 // inline search — overlay disabled
+</script>
+
+<!-- ══════════ FIREBASE: auth + Firestore sync (sign-in, wishlists, reminders, giveaway) ══════════ -->
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<script>
+(function(){
+  // Person-icon SVG used when signed out (matches original sidebar button)
+  const PERSON_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+
+  if(typeof firebase==='undefined'){
+    // SDK failed to load (offline/blocked) — keep app fully usable on localStorage only.
+    window.gbSignIn=function(){toast('Sign-in unavailable — check your connection')};
+    return;
+  }
+
+  firebase.initializeApp({
+    apiKey:"AIzaSyBPvwf-ilWhc5G_jAEaRDwlom0jJY678w4",
+    authDomain:"giftingbutler-74395.firebaseapp.com",
+    projectId:"giftingbutler-74395",
+    storageBucket:"giftingbutler-74395.firebasestorage.app",
+    messagingSenderId:"37308175610",
+    appId:"1:37308175610:web:547281f014be448b292543",
+    measurementId:"G-KTPDVDSNWV"
+  });
+  const auth=firebase.auth(), db=firebase.firestore();
+  let uid=null;
+  window.gbAuth=auth; window.gbDB=db;
+
+  const userDoc=()=>db.collection('users').doc(uid);
+
+  // ── Mirror wishlist/reminder writes to Firestore ──
+  // Every wishlist & reminder mutation already flows through S.set('gb_fam'|'gb_rem'),
+  // so wrapping S.set once captures them all without touching each call site.
+  const _origSet=S.set;
+  S.set=function(k,v){
+    _origSet(k,v);
+    if(!uid) return;
+    if(k==='gb_fam') userDoc().set({wishlists:v,updatedAt:Date.now()},{merge:true}).catch(e=>console.warn('[gb] wishlist sync',e));
+    else if(k==='gb_rem') userDoc().set({reminders:v,updatedAt:Date.now()},{merge:true}).catch(e=>console.warn('[gb] reminder sync',e));
+  };
+
+  // ── Giveaway entries → Firestore (in addition to existing local behavior) ──
+  const _origSubmitGW=window.submitGW;
+  window.submitGW=function(){
+    const email=(document.getElementById('gw-email').value||'').trim();
+    _origSubmitGW();
+    if(email && email.includes('@')){
+      const id=wk('gw')+'_'+email.replace(/[^a-z0-9]/gi,'_');
+      db.collection('giveaway_entries').doc(id).set({email,week:wk('gw'),uid:uid||null,ts:Date.now()},{merge:true})
+        .catch(e=>console.warn('[gb] giveaway sync',e));
+    }
+  };
+
+  // ── Sidebar button reflects auth state (photo + name) ──
+  function renderAuth(user){
+    const btn=document.querySelector('.sb-signin'); if(!btn) return;
+    let label=document.querySelector('.sb-name');
+    if(user){
+      btn.title=(user.displayName||'Account')+' — click to sign out';
+      btn.style.overflow='hidden'; btn.style.padding='0';
+      btn.innerHTML=user.photoURL
+        ? '<img src="'+user.photoURL+'" referrerpolicy="no-referrer" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover">'
+        : '<span style="font-weight:600;font-size:1rem;color:var(--plum)">'+((user.displayName||'U').trim().charAt(0).toUpperCase())+'</span>';
+      if(!label){
+        label=document.createElement('div');
+        label.className='sb-name';
+        label.style.cssText='font-size:.55rem;font-weight:600;color:var(--ink2);max-width:60px;text-align:center;margin-top:.25rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap';
+        btn.insertAdjacentElement('afterend',label);
+      }
+      label.textContent=(user.displayName||'').split(' ')[0]||'You';
+    }else{
+      btn.title='Sign in'; btn.style.padding=''; btn.innerHTML=PERSON_SVG;
+      if(label) label.remove();
+    }
+  }
+
+  // ── Click person icon → Google popup (or sign out if already in) ──
+  window.gbSignIn=function(){
+    if(uid){ if(confirm('Sign out of GiftingButler?')) auth.signOut(); return; }
+    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+      .catch(err=>{
+        console.error('[gb] sign-in',err);
+        toast(err&&err.code==='auth/unauthorized-domain'?'Add this domain in Firebase Auth settings':'Sign-in failed');
+      });
+  };
+
+  // ── Auth state: load the user's cloud data and re-render ──
+  auth.onAuthStateChanged(function(user){
+    if(!user){ uid=null; renderAuth(null); return; }
+    uid=user.uid; renderAuth(user);
+    userDoc().get().then(function(snap){
+      if(snap.exists){
+        const d=snap.data()||{};
+        if(Array.isArray(d.wishlists)){ family=d.wishlists; _origSet('gb_fam',family); activeM=family.length?family[0].id:null; }
+        if(Array.isArray(d.reminders)){ reminders=d.reminders; _origSet('gb_rem',reminders); }
+      }else{
+        // First sign-in on this account → seed cloud with whatever is local now.
+        userDoc().set({wishlists:family,reminders:reminders,createdAt:Date.now(),updatedAt:Date.now()},{merge:true})
+          .catch(e=>console.warn('[gb] seed',e));
+      }
+      // Keep any open panels in sync with freshly loaded data.
+      try{renderMembers();renderWL();renderReminders();updateGW();}catch(e){}
+      toast('Welcome, '+((user.displayName||'').split(' ')[0]||'back')+'! ✨');
+    }).catch(e=>console.warn('[gb] load',e));
+  });
+})();
 </script>
 </body>
 </html>
