@@ -1097,6 +1097,10 @@ body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;bac
 .s-ico{width:48px!important;height:48px!important;min-width:48px!important;min-height:48px!important;aspect-ratio:1/1!important;border-radius:50%!important;flex-shrink:0!important}
 .sb-signin{min-width:48px!important;min-height:48px!important;aspect-ratio:1/1!important;flex-shrink:0!important}
 
+/* ── Wishlist modal: single scrollbar + consistent rounded shapes ── */
+.wli-list{max-height:none!important;overflow:visible!important}
+.mrow,.wli{border-radius:14px!important}
+.btn-sm{border-radius:50px!important;padding-left:.95rem!important;padding-right:.95rem!important}
 </style>
 </head>
 <body>
@@ -1422,6 +1426,15 @@ const P=[
 let activeCat='all',searchQ='',curProd=null;
 const S={get:(k,d)=>{try{const v=localStorage.getItem(k);return v!==null?JSON.parse(v):d}catch{return d}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
 function wk(p){const d=new Date(),y=d.getFullYear(),w=Math.ceil(((d-new Date(y,0,1))/86400000+new Date(y,0,1).getDay()+1)/7);return`${p}_${y}_w${w}`}
+// One-time cleanup of pre-launch demo/placeholder data (Jacob/Sarah, fake giveaway entries)
+(function(){try{
+  if(localStorage.getItem('gb_v')==='clean1')return;
+  localStorage.removeItem('gb_fam');localStorage.removeItem('gb_rem');localStorage.removeItem('gb_saved');
+  const k=wk('gb_e');let e=[];try{e=JSON.parse(localStorage.getItem(k))||[]}catch(_){}
+  localStorage.setItem(k,JSON.stringify(e.filter(x=>!/^s\d+@x\.com$/.test(x))));
+  localStorage.setItem('gb_cloud_reset','1'); // also reset the cloud copy on next sign-in
+  localStorage.setItem('gb_v','clean1');
+}catch(_){}})();
 let family=S.get('gb_fam',[]);
 let reminders=S.get('gb_rem',[]);
 let activeM=family.length?family[0].id:null;
@@ -1882,21 +1895,24 @@ document.getElementById('rem-month').addEventListener('change',populateDays);
     // Pre-fill the giveaway email so signed-in users don't retype it
     try{const gwE=document.getElementById('gw-email'); if(gwE && user.email && !gwE.value) gwE.value=user.email;}catch(e){}
     userDoc().get().then(function(snap){
-      if(snap.exists){
+      const forceReset=localStorage.getItem('gb_cloud_reset')==='1';
+      if(forceReset){
+        // This account was seeded with old demo data — wipe it and start fresh.
+        family=[]; reminders=[]; _origSet('gb_fam',family); _origSet('gb_rem',reminders);
+        localStorage.removeItem('gb_cloud_reset');
+      }else if(snap.exists){
         const d=snap.data()||{};
         if(Array.isArray(d.wishlists)){ family=d.wishlists; _origSet('gb_fam',family); activeM=family.length?family[0].id:null; }
         if(Array.isArray(d.reminders)){ reminders=d.reminders; _origSet('gb_rem',reminders); }
-      }else{
-        // First sign-in on this account → seed cloud with whatever is local now.
-        userDoc().set({wishlists:family,reminders:reminders,createdAt:Date.now(),updatedAt:Date.now()},{merge:true})
-          .catch(e=>console.warn('[gb] seed',e));
       }
       // If there's no wishlist yet, start one named after the signed-in user.
       if(!family.length){
         const fn=((user.displayName||user.email||'My').split(' ')[0]||'My').replace(/@.*$/,'');
         family=[{id:1,name:fn,wl:[]}]; activeM=1; _origSet('gb_fam',family);
-        userDoc().set({wishlists:family,updatedAt:Date.now()},{merge:true}).catch(e=>console.warn('[gb] seed-wl',e));
       }
+      // Persist the (possibly reset) data back to the cloud.
+      userDoc().set({wishlists:family,reminders:reminders,updatedAt:Date.now()},{merge:true})
+        .catch(e=>console.warn('[gb] sync',e));
       // Keep any open panels in sync with freshly loaded data.
       try{renderMembers();renderWL();renderReminders();updateGW();}catch(e){}
       toast('Welcome, '+((user.displayName||'').split(' ')[0]||'back')+'! ✨');
