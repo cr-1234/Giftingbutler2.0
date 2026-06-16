@@ -1103,6 +1103,12 @@ body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;bac
 .modal::-webkit-scrollbar{display:none}
 .modal .btn,.mrow,.wli,.rem-row,.modal .fld input,.modal .fld select,#new-name{border-radius:999px!important}
 .btn-sm{padding-left:1rem!important;padding-right:1rem!important}
+/* thin, subtle page scrollbar (modals stay hidden via .modal rule above) */
+html{scrollbar-width:thin;scrollbar-color:rgba(91,45,142,.32) transparent}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(91,45,142,.3);border-radius:50px;border:2px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:rgba(91,45,142,.5);background-clip:padding-box}
 </style>
 </head>
 <body>
@@ -1471,8 +1477,10 @@ function skeletonRow(n=4){
   return`<div style="display:flex;gap:.85rem;overflow-x:auto;padding-bottom:.4rem;scrollbar-width:none">${Array(n).fill(0).map(()=>`<div class="skel-card"><div class="skel-img"><div class="sh"></div></div><div class="skel-body"><div class="sh sh-line w80"></div><div class="sh sh-line w55"></div></div></div>`).join('')}</div>`;
 }
 
+// Heart state is derived from wishlist membership (single source of truth)
+function isSaved(p){return !!(p&&family.some(m=>m.wl.some(it=>it.u===p.url||it.t===p.title)));}
 function cardHTML(p){
-  const saved=S.get('gb_saved',[]);const sv=saved.includes(p.id);
+  const sv=isSaved(p);
   return`<div class="card" role="button" tabindex="0" aria-label="${p.brand} — ${p.title}, $${p.price.toFixed(2)}" onclick="openDetail(${p.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openDetail(${p.id})}"><div class="ciw"><img class="ci" src="${p.img}" alt="${p.title}" loading="lazy" onerror="this.onerror=null;this.src=PH">${p.badge?`<div class="cbadge${p.bs?' '+p.bs:''}">${p.badge}</div>`:''}<div class="cprice">$${p.price.toFixed(2)}</div><button class="chrt${sv?' sv':''}" aria-label="Save to wishlist" onclick="event.stopPropagation();toggleSave(${p.id})"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></button></div><div class="cbody"><div class="cbrand">${p.brand}</div><div class="cname">${p.title}</div></div></div>`;
 }
 
@@ -1508,13 +1516,14 @@ function renderP(){
 function clearSearch(){searchQ='';document.getElementById('search').value='';renderP()}
 function toggleSave(id){
   const p=P.find(x=>x.id===id);if(!p)return;
-  let saved=S.get('gb_saved',[]);
-  if(saved.includes(id)){saved=saved.filter(x=>x!==id);toast('Removed')}
-  else{
-    if(!activeM){const newId=family.length?Math.max(...family.map(x=>x.id))+1:1;family.push({id:newId,name:'My Wishlist',wl:[]});activeM=newId;S.set('gb_fam',family);}
-    saved.push(id);quickAdd(p.title,p.url,true);toast('♥ Saved to wishlist');
+  if(isSaved(p)){
+    family.forEach(m=>{m.wl=m.wl.filter(it=>it.u!==p.url&&it.t!==p.title)});
+    S.set('gb_fam',family);toast('Removed');
+  }else{
+    if(!activeM){const newId=family.length?Math.max(...family.map(x=>x.id))+1:1;family.push({id:newId,name:'My Wishlist',wl:[]});activeM=newId;}
+    const m=family.find(x=>x.id===activeM);m.wl.push({t:p.title,u:p.url});S.set('gb_fam',family);toast('♥ Saved to wishlist');
   }
-  S.set('gb_saved',saved);renderP();
+  renderP();try{renderMembers();renderWL();}catch(e){}
 }
 
 // ══ DETAIL ══
@@ -1531,7 +1540,7 @@ function openDetail(id){
 }
 function updateDSave(){
   if(!curProd)return;const b=document.getElementById('d-save');if(!b)return;
-  const saved=S.get('gb_saved',[]).includes(curProd.id);
+  const saved=isSaved(curProd);
   b.style.color=saved?'var(--rose)':'';b.style.borderColor=saved?'rgba(192,57,90,.5)':'';
   b.innerHTML='<svg viewBox="0 0 24 24" width="16" height="16" style="vertical-align:-3px;margin-right:.35rem"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="'+(saved?'currentColor':'none')+'" stroke="currentColor" stroke-width="1.9"/></svg>'+(saved?'Saved to Wishlist':'Save to Wishlist');
 }
@@ -1572,7 +1581,7 @@ function addWLItem(e){
   if(u.includes('amazon.com')){try{const uo=new URL(u);uo.searchParams.set('tag','giftingbutler-20');u=uo.toString()}catch{}}
   const m=family.find(x=>x.id===activeM);if(m){m.wl.push({t,u});S.set('gb_fam',family);document.getElementById('wl-name').value='';document.getElementById('wl-url').value='';renderMembers();renderWL();toast('Item added!')}
 }
-function delWLItem(i){const m=family.find(x=>x.id===activeM);if(m){m.wl.splice(i,1);S.set('gb_fam',family);renderMembers();renderWL()}}
+function delWLItem(i){const m=family.find(x=>x.id===activeM);if(m){m.wl.splice(i,1);S.set('gb_fam',family);renderMembers();renderWL();renderP()}}
 function shareWL(){const m=family.find(x=>x.id===activeM);if(!m)return;navigator.clipboard.writeText(`${m.name}'s Wishlist:\n`+m.wl.map(i=>`• ${i.t}: ${i.u}`).join('\n')).then(()=>toast('Wishlist copied! 📋')).catch(()=>toast('Could not copy'))}
 
 // ══ REMINDERS ══
