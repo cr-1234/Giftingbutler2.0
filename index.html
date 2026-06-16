@@ -1099,8 +1099,7 @@ body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;bac
 
 /* ── Modal polish: hidden scrollbar + uniform pill shapes ── */
 .wli-list{max-height:none!important;overflow:visible!important}
-.modal{scrollbar-width:none;-ms-overflow-style:none}
-.modal::-webkit-scrollbar{display:none}
+.modal{scrollbar-width:thin;scrollbar-color:rgba(91,45,142,.5) rgba(91,45,142,.08)}
 .modal .btn,.mrow,.wli,.rem-row,.modal .fld input,.modal .fld select,#new-name{border-radius:999px!important}
 .btn-sm{padding-left:1rem!important;padding-right:1rem!important}
 /* thin but visible page scrollbar (modals stay hidden via .modal rule above) */
