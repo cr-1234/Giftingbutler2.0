@@ -127,6 +127,9 @@ body{font-family:'Inter',sans-serif;background:linear-gradient(165deg,#f3effa 0%
 .cprice{position:absolute;bottom:.55rem;left:.55rem;background:rgba(255,255,255,.95);backdrop-filter:blur(8px) saturate(150%);-webkit-backdrop-filter:blur(8px) saturate(150%);font-family:'Inter',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:-.01em;padding:3px 10px;border-radius:50px;color:#1a1a1a;border:1px solid rgba(0,0,0,.05);box-shadow:0 2px 10px rgba(0,0,0,.13);z-index:2}
 .chrt{position:absolute;top:.6rem;right:.6rem;width:32px;height:32px;background:rgba(255,255,255,.6);backdrop-filter:blur(14px) saturate(160%);-webkit-backdrop-filter:blur(14px) saturate(160%);border-radius:50%;border:1px solid rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;color:var(--ink2);transition:all .22s var(--ease);z-index:2;box-shadow:0 2px 10px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.9)}
 .chrt:hover,.chrt.sv{color:var(--rose);background:rgba(192,57,90,.18);border-color:rgba(192,57,90,.5)}
+.chrt svg{width:17px;height:17px;display:block;pointer-events:none}
+.chrt svg path{fill:none;stroke:currentColor;stroke-width:1.9}
+.chrt.sv svg path{fill:currentColor}
 .cbody{padding:.85rem .85rem .95rem;flex:1}
 .cbrand{font-size:8.5px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--plum);opacity:.75;margin-bottom:.28rem}
 .cname{font-size:.86rem;font-weight:600;color:var(--ink);line-height:1.34;letter-spacing:-.005em}
@@ -191,7 +194,7 @@ body{font-family:'Inter',sans-serif;background:linear-gradient(165deg,#f3effa 0%
 .gwb p{font-size:.77rem;color:rgba(255,255,255,.6);margin-bottom:.75rem}
 .ppill{display:inline-flex;align-items:center;gap:.38rem;background:var(--gold);color:#fff;font-size:1.15rem;font-weight:800;padding:.35rem 1.15rem;border-radius:50px;margin-bottom:.7rem}
 .tiers{display:flex;gap:.32rem;justify-content:center;flex-wrap:wrap;margin-bottom:.55rem}
-.tier{display:flex;flex-direction:column;align-items:center;gap:1px;line-height:1.05;font-weight:700;padding:3px 9px;border-radius:11px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.42);border:1px solid rgba(255,255,255,.12)}
+.tier{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-height:30px;line-height:1.05;font-weight:700;padding:3px 9px;border-radius:11px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.42);border:1px solid rgba(255,255,255,.12)}
 .tier .tp{font-size:11px;font-weight:800}
 .tier .tt{font-size:7.5px;font-weight:600;opacity:.85;letter-spacing:.02em;text-transform:uppercase}
 .tier.lit{background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.32)}
@@ -1284,7 +1287,7 @@ body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;bac
 <!-- GIVEAWAY -->
 <div class="ov" id="gw-modal" onclick="oc(event,this)">
   <div class="modal"><button class="mx" onclick="cm('gw-modal')">✕</button>
-    <div class="mhd"><div class="gwb"><div style="font-size:2rem;margin-bottom:.28rem">🎁</div><h3>Weekly Gift Card Giveaway</h3><p>More entries = bigger prize for everyone!</p><div class="ppill">Amazon Gift Card — <span id="prize-lbl">$10</span></div><div class="tiers" id="tier-row"><div class="tier"><span class="tp">$5</span><span class="tt">start</span></div><div class="tier"><span class="tp">$10</span><span class="tt">100+</span></div><div class="tier"><span class="tp">$25</span><span class="tt">250+</span></div><div class="tier"><span class="tp">$50</span><span class="tt">1K+</span></div><div class="tier"><span class="tp">$75</span><span class="tt">5K+</span></div><div class="tier"><span class="tp">$100</span><span class="tt">10K+</span></div></div><p class="ec"><strong id="ec-num">120</strong> entries this week</p><div class="pgbar"><div class="pgfill" id="pgfill" style="width:12%"></div></div></div></div>
+    <div class="mhd"><div class="gwb"><div style="font-size:2rem;margin-bottom:.28rem">🎁</div><h3>Weekly Gift Card Giveaway</h3><p>More entries = bigger prize for everyone!</p><div class="ppill">Amazon Gift Card — <span id="prize-lbl">$10</span></div><div class="tiers" id="tier-row"><div class="tier"><span class="tp">$5</span></div><div class="tier"><span class="tp">$10</span><span class="tt">100+</span></div><div class="tier"><span class="tp">$25</span><span class="tt">250+</span></div><div class="tier"><span class="tp">$50</span><span class="tt">1K+</span></div><div class="tier"><span class="tp">$75</span><span class="tt">5K+</span></div><div class="tier"><span class="tp">$100</span><span class="tt">10K+</span></div></div><p class="ec"><strong id="ec-num">0</strong> entries this week</p><div class="pgbar"><div class="pgfill" id="pgfill" style="width:0%"></div></div></div></div>
     <div class="mbd" style="padding-top:.65rem">
       <div id="gw-form"><div class="fld"><label>Your Email</label><input type="email" id="gw-email" placeholder="you@example.com"></div><button class="btn btn-gold btn-full" onclick="submitGW()">🎁 Enter This Week's Giveaway</button><p style="font-size:.67rem;color:var(--ink3);text-align:center;margin-top:.5rem;line-height:1.5">1 entry per week · Winner announced every Sunday</p></div>
       <div id="gw-done" style="display:none;text-align:center;padding:.65rem 0"><div style="font-size:2.3rem;margin-bottom:.4rem">🎉</div><div class="mh2" style="font-size:1.2rem">You're entered!</div><p style="color:var(--ink3);font-size:.78rem;margin-top:.25rem">Winner announced every Sunday. Good luck!</p></div>
@@ -1419,12 +1422,11 @@ const P=[
 let activeCat='all',searchQ='',curProd=null;
 const S={get:(k,d)=>{try{const v=localStorage.getItem(k);return v!==null?JSON.parse(v):d}catch{return d}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
 function wk(p){const d=new Date(),y=d.getFullYear(),w=Math.ceil(((d-new Date(y,0,1))/86400000+new Date(y,0,1).getDay()+1)/7);return`${p}_${y}_w${w}`}
-let family=S.get('gb_fam',[{id:1,name:'Jacob',wl:[{t:'Retro Mechanical Keyboard',u:'https://www.amazon.com/?tag=giftingbutler-20'}]},{id:2,name:'Sarah',wl:[{t:'Aesthetic Wave Mirror',u:'https://www.amazon.com/?tag=giftingbutler-20'}]}]);
-let reminders=S.get('gb_rem',[{id:1,ev:"Sarah's Birthday",date:'',month:7,day:15,year:null,time:'2_weeks'},{id:2,ev:"Jacob's Bar Mitzvah",date:'',month:9,day:20,year:2027,time:'1_month'}]);
+let family=S.get('gb_fam',[]);
+let reminders=S.get('gb_rem',[]);
 let activeM=family.length?family[0].id:null;
 function getE(){return S.get(wk('gb_e'),[])}function setE(e){S.set(wk('gb_e'),e)}
 function getEM(){return localStorage.getItem(wk('gb_me'))||''}function setEM(e){localStorage.setItem(wk('gb_me'),e)}
-if(!getE().length)setE(Array.from({length:120},(_,i)=>`s${i}@x.com`));
 function calcPrize(n){if(n>=10000)return{l:'$100',t:5};if(n>=5000)return{l:'$75',t:4};if(n>=1000)return{l:'$50',t:3};if(n>=250)return{l:'$25',t:2};if(n>=100)return{l:'$10',t:1};return{l:'$5',t:0}}
 
 // ══ BANNER: shop.app shimmer → real images ══
@@ -1456,7 +1458,7 @@ function skeletonRow(n=4){
 
 function cardHTML(p){
   const saved=S.get('gb_saved',[]);const sv=saved.includes(p.id);
-  return`<div class="card" role="button" tabindex="0" aria-label="${p.brand} — ${p.title}, $${p.price.toFixed(2)}" onclick="openDetail(${p.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openDetail(${p.id})}"><div class="ciw"><img class="ci" src="${p.img}" alt="${p.title}" loading="lazy" onerror="this.onerror=null;this.src=PH">${p.badge?`<div class="cbadge${p.bs?' '+p.bs:''}">${p.badge}</div>`:''}<div class="cprice">$${p.price.toFixed(2)}</div><button class="chrt${sv?' sv':''}" onclick="event.stopPropagation();toggleSave(${p.id})">${sv?'♥':'♡'}</button></div><div class="cbody"><div class="cbrand">${p.brand}</div><div class="cname">${p.title}</div></div></div>`;
+  return`<div class="card" role="button" tabindex="0" aria-label="${p.brand} — ${p.title}, $${p.price.toFixed(2)}" onclick="openDetail(${p.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openDetail(${p.id})}"><div class="ciw"><img class="ci" src="${p.img}" alt="${p.title}" loading="lazy" onerror="this.onerror=null;this.src=PH">${p.badge?`<div class="cbadge${p.bs?' '+p.bs:''}">${p.badge}</div>`:''}<div class="cprice">$${p.price.toFixed(2)}</div><button class="chrt${sv?' sv':''}" aria-label="Save to wishlist" onclick="event.stopPropagation();toggleSave(${p.id})"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></button></div><div class="cbody"><div class="cbrand">${p.brand}</div><div class="cname">${p.title}</div></div></div>`;
 }
 
 function renderP(){
@@ -1493,7 +1495,10 @@ function toggleSave(id){
   const p=P.find(x=>x.id===id);if(!p)return;
   let saved=S.get('gb_saved',[]);
   if(saved.includes(id)){saved=saved.filter(x=>x!==id);toast('Removed')}
-  else{saved.push(id);quickAdd(p.title,p.url,true);toast('♥ Saved to wishlist')}
+  else{
+    if(!activeM){const newId=family.length?Math.max(...family.map(x=>x.id))+1:1;family.push({id:newId,name:'My Wishlist',wl:[]});activeM=newId;S.set('gb_fam',family);}
+    saved.push(id);quickAdd(p.title,p.url,true);toast('♥ Saved to wishlist');
+  }
   S.set('gb_saved',saved);renderP();
 }
 
@@ -1877,6 +1882,12 @@ document.getElementById('rem-month').addEventListener('change',populateDays);
         // First sign-in on this account → seed cloud with whatever is local now.
         userDoc().set({wishlists:family,reminders:reminders,createdAt:Date.now(),updatedAt:Date.now()},{merge:true})
           .catch(e=>console.warn('[gb] seed',e));
+      }
+      // If there's no wishlist yet, start one named after the signed-in user.
+      if(!family.length){
+        const fn=((user.displayName||user.email||'My').split(' ')[0]||'My').replace(/@.*$/,'');
+        family=[{id:1,name:fn,wl:[]}]; activeM=1; _origSet('gb_fam',family);
+        userDoc().set({wishlists:family,updatedAt:Date.now()},{merge:true}).catch(e=>console.warn('[gb] seed-wl',e));
       }
       // Keep any open panels in sync with freshly loaded data.
       try{renderMembers();renderWL();renderReminders();updateGW();}catch(e){}
