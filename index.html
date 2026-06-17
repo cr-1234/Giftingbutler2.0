@@ -1100,9 +1100,12 @@ body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;bac
 /* ── Modal polish: hidden scrollbar + uniform pill shapes ── */
 .wli-list{max-height:none!important;overflow:visible!important}
 .modal{scrollbar-width:thin;scrollbar-color:rgba(91,45,142,.5) rgba(91,45,142,.08)}
-.modal::-webkit-scrollbar-track{margin:30px 0;background:transparent}
+.modal::-webkit-scrollbar-track{margin:40px 0;background:transparent}
 .modal .btn,.mrow,.wli,.rem-row,.modal .fld input,.modal .fld select,#new-name{border-radius:999px!important}
 .btn-sm{padding-left:1rem!important;padding-right:1rem!important}
+/* sidebar G logo: hidden at top, appears once scrolled past the topbar */
+.sb-logo{opacity:0;pointer-events:none;transition:opacity .25s var(--ease)}
+.sb-logo.show{opacity:1;pointer-events:auto}
 /* thin but visible page scrollbar (modals stay hidden via .modal rule above) */
 html{scrollbar-width:thin;scrollbar-color:rgba(91,45,142,.55) rgba(91,45,142,.08)}
 ::-webkit-scrollbar{width:10px;height:10px}
@@ -1167,17 +1170,6 @@ html{scrollbar-width:thin;scrollbar-color:rgba(91,45,142,.55) rgba(91,45,142,.08
     <input type="text" id="search" class="tb-si" placeholder="Search gifts, occasions…" oninput="searchQ=this.value.trim();renderP()" onkeydown="if(event.key==='Enter'){searchQ=this.value;renderP();document.getElementById('feed').scrollIntoView({behavior:'smooth',block:'start'})}">
     <button class="tb-sbtn" onclick="searchQ=document.getElementById('search').value.trim();renderP();document.getElementById('feed').scrollIntoView({behavior:'smooth',block:'start'})">
       <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
-    </button>
-  </div>
-  <div class="tb-icons">
-    <button class="ti ti-wl" onclick="om('wl-modal')" title="Wishlists">
-      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg>
-    </button>
-    <button class="ti ti-bell" onclick="om('rem-modal')" title="Reminders">
-      <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/></svg>
-    </button>
-    <button class="ti ti-gift" onclick="om('gw-modal')" title="Giveaway">
-      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 5a3 3 0 015-2.236A3 3 0 0114.83 6H16a2 2 0 110 4h-5V9a1 1 0 10-2 0v1H4a2 2 0 110-4h1.17C5.06 5.687 5 5.35 5 5zm4 1V5a1 1 0 10-1 1h1zm3 0a1 1 0 10-1-1v1h1z" clip-rule="evenodd"/><path d="M9 11H3v5a2 2 0 002 2h4v-7zM11 18h4a2 2 0 002-2v-5h-6v7z"/></svg>
     </button>
   </div>
 </header>
@@ -1671,6 +1663,7 @@ window.addEventListener('scroll',()=>{
   if(fsbar)fsbar.classList.toggle('show',scrolled&&!footIn);
   const mbttc=document.getElementById('mob-btt-circle');
   if(mbttc){mbttc.style.opacity=window.scrollY>300?'1':'0';mbttc.style.pointerEvents=window.scrollY>300?'all':'none';}
+  const sbl=document.querySelector('.sb-logo');if(sbl)sbl.classList.toggle('show',window.scrollY>150);
 });
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2700)}
 
@@ -1725,15 +1718,34 @@ document.getElementById('rem-month').addEventListener('change',populateDays);
     else if(k==='gb_rem') userDoc().set({reminders:v,updatedAt:Date.now()},{merge:true}).catch(e=>console.warn('[gb] reminder sync',e));
   };
 
-  // ── Giveaway entries → Firestore (in addition to existing local behavior) ──
+  // ── Giveaway: write entry + maintain a PUBLIC global counter (shared across everyone) ──
+  const gwMeta=()=>db.collection('giveaway_meta').doc(wk('gw'));
+  function refreshGWCount(){
+    gwMeta().get().then(function(snap){
+      const n=(snap.exists&&snap.data().count)||0;
+      const lbl=document.getElementById('ec-num'); if(!lbl)return;
+      const pr=calcPrize(n);
+      lbl.textContent=n.toLocaleString();
+      const pz=document.getElementById('prize-lbl'); if(pz)pz.textContent=pr.l;
+      const pg=document.getElementById('pgfill'); if(pg)pg.style.width=Math.min(100,Math.round(n/10))+'%';
+      document.querySelectorAll('.tier').forEach((el,i)=>el.classList.toggle('lit',i<=pr.t));
+    }).catch(e=>console.warn('[gb] gw count',e));
+  }
+  const _origUpdateGW=window.updateGW;
+  window.updateGW=function(){ _origUpdateGW(); refreshGWCount(); };
   const _origSubmitGW=window.submitGW;
   window.submitGW=function(){
     const email=(document.getElementById('gw-email').value||'').trim();
+    const isNew=email && email.includes('@') && !getE().includes(email);
     _origSubmitGW();
     if(email && email.includes('@')){
       const id=wk('gw')+'_'+email.replace(/[^a-z0-9]/gi,'_');
       db.collection('giveaway_entries').doc(id).set({email,week:wk('gw'),uid:uid||null,ts:Date.now()},{merge:true})
         .catch(e=>console.warn('[gb] giveaway sync',e));
+      if(isNew){
+        gwMeta().set({count:firebase.firestore.FieldValue.increment(1),week:wk('gw')},{merge:true})
+          .then(refreshGWCount).catch(e=>console.warn('[gb] gw count',e));
+      }
     }
   };
 
@@ -1901,7 +1913,15 @@ document.getElementById('rem-month').addEventListener('change',populateDays);
 
   // ── Auth state: load the user's cloud data and re-render ──
   auth.onAuthStateChanged(function(user){
-    if(!user){ uid=null; renderAuth(null); return; }
+    if(!user){
+      // Signed out → clear this account's data from the view (it's safe in the cloud).
+      uid=null; renderAuth(null);
+      family=[]; reminders=[]; activeM=null;
+      _origSet('gb_fam',family); _origSet('gb_rem',reminders);
+      try{localStorage.removeItem(wk('gb_me'));}catch(e){}
+      try{renderMembers();renderWL();renderReminders();renderP();updateGW();}catch(e){}
+      return;
+    }
     uid=user.uid; renderAuth(user);
     try{cm('auth-modal');}catch(e){}
     // Pre-fill the giveaway email so signed-in users don't retype it
