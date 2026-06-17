@@ -1732,8 +1732,9 @@ document.getElementById('rem-month').addEventListener('change',populateDays);
     else if(k==='gb_rem') userDoc().set({reminders:v,updatedAt:Date.now()},{merge:true}).catch(e=>console.warn('[gb] reminder sync',e));
   };
 
-  // ── Giveaway: write entry + maintain a PUBLIC global counter (shared across everyone) ──
+  // ── Giveaway: count UNIQUE entries in a PUBLIC global counter (shared across everyone) ──
   const gwMeta=()=>db.collection('giveaway_meta').doc(wk('gw'));
+  const gwEntry=email=>db.collection('giveaway_entries').doc(wk('gw')+'_'+email.replace(/[^a-z0-9]/gi,'_'));
   function refreshGWCount(){
     gwMeta().get().then(function(snap){
       const n=(snap.exists&&snap.data().count)||0;
@@ -1745,22 +1746,31 @@ document.getElementById('rem-month').addEventListener('change',populateDays);
       document.querySelectorAll('.tier').forEach((el,i)=>el.classList.toggle('lit',i<=pr.t));
     }).catch(e=>console.warn('[gb] gw count',e));
   }
+  // Count an email exactly once — atomic, so it's safe to call repeatedly or
+  // from multiple devices, and it back-fills entries made before this existed.
+  function ensureCounted(email){
+    if(!email||email.indexOf('@')<0) return Promise.resolve();
+    return db.runTransaction(function(tx){
+      const ref=gwEntry(email);
+      return tx.get(ref).then(function(doc){
+        if(doc.exists) return;
+        tx.set(ref,{email:email,week:wk('gw'),uid:uid||null,ts:Date.now()});
+        tx.set(gwMeta(),{count:firebase.firestore.FieldValue.increment(1),week:wk('gw')},{merge:true});
+      });
+    }).catch(function(e){console.warn('[gb] ensureCounted',e);});
+  }
   const _origUpdateGW=window.updateGW;
-  window.updateGW=function(){ _origUpdateGW(); refreshGWCount(); };
+  window.updateGW=function(){
+    _origUpdateGW();
+    refreshGWCount();
+    const mine=(typeof getEM==='function'&&getEM())||'';
+    if(mine) ensureCounted(mine).then(refreshGWCount);
+  };
   const _origSubmitGW=window.submitGW;
   window.submitGW=function(){
     const email=(document.getElementById('gw-email').value||'').trim();
-    const isNew=email && email.includes('@') && !getE().includes(email);
     _origSubmitGW();
-    if(email && email.includes('@')){
-      const id=wk('gw')+'_'+email.replace(/[^a-z0-9]/gi,'_');
-      db.collection('giveaway_entries').doc(id).set({email,week:wk('gw'),uid:uid||null,ts:Date.now()},{merge:true})
-        .catch(e=>console.warn('[gb] giveaway sync',e));
-      if(isNew){
-        gwMeta().set({count:firebase.firestore.FieldValue.increment(1),week:wk('gw')},{merge:true})
-          .then(refreshGWCount).catch(e=>console.warn('[gb] gw count',e));
-      }
-    }
+    if(email && email.indexOf('@')>=0) ensureCounted(email).then(refreshGWCount);
   };
 
   // ── Sidebar button reflects auth state (photo + name) ──
