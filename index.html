@@ -1106,6 +1106,8 @@ body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;bac
 /* sidebar G logo: hidden at top, appears once scrolled past the topbar */
 .sb-logo{opacity:0;pointer-events:none;transition:opacity .25s var(--ease)}
 .sb-logo.show{opacity:1;pointer-events:auto}
+/* mobile: hide the whole left sidebar (nav lives in the bottom bar) */
+@media(max-width:768px){.sidebar{display:none!important}}
 /* category bar: show a slim draggable scrollbar for mouse-only users */
 #cat-nav{scrollbar-width:thin!important;scrollbar-color:rgba(91,45,142,.35) transparent}
 #cat-nav::-webkit-scrollbar{display:block!important;height:7px}
@@ -1163,6 +1165,9 @@ html{scrollbar-width:thin;scrollbar-color:rgba(91,45,142,.55) rgba(91,45,142,.08
   </button>
   <button class="mb-btn mb-gift" onclick="om('gw-modal')">
     <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 5a3 3 0 015-2.236A3 3 0 0114.83 6H16a2 2 0 110 4h-5V9a1 1 0 10-2 0v1H4a2 2 0 110-4h1.17C5.06 5.687 5 5.35 5 5zm4 1V5a1 1 0 10-1 1h1zm3 0a1 1 0 10-1-1v1h1z" clip-rule="evenodd"/><path d="M9 11H3v5a2 2 0 002 2h4v-7zM11 18h4a2 2 0 002-2v-5h-6v7z"/></svg>
+  </button>
+  <button class="mb-btn mb-signin" onclick="gbSignIn()" title="Sign in">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
   </button>
 </nav>
 
@@ -1759,26 +1764,34 @@ document.getElementById('rem-month').addEventListener('change',populateDays);
   };
 
   // ── Sidebar button reflects auth state (photo + name) ──
-  function renderAuth(user){
-    const btn=document.querySelector('.sb-signin'); if(!btn) return;
-    let label=document.querySelector('.sb-name');
+  function setAuthBtn(btn,user){
+    if(!btn) return;
     if(user){
-      btn.title=(user.displayName||'Account')+' — click to sign out';
+      btn.title=(user.displayName||'Account')+' — tap to sign out';
       btn.style.overflow='hidden'; btn.style.padding='0';
       btn.innerHTML=user.photoURL
         ? '<img src="'+user.photoURL+'" referrerpolicy="no-referrer" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover">'
         : '<span style="font-weight:600;font-size:1rem;color:var(--plum)">'+((user.displayName||'U').trim().charAt(0).toUpperCase())+'</span>';
+    }else{
+      btn.title='Sign in'; btn.style.padding=''; btn.innerHTML=PERSON_SVG;
+    }
+  }
+  function renderAuth(user){
+    // update both the sidebar (desktop) and bottom-bar (mobile) sign-in buttons
+    setAuthBtn(document.querySelector('.sb-signin'),user);
+    setAuthBtn(document.querySelector('.mb-signin'),user);
+    // first-name label under the sidebar button only
+    const sb=document.querySelector('.sb-signin');
+    let label=document.querySelector('.sb-name');
+    if(user&&sb){
       if(!label){
         label=document.createElement('div');
         label.className='sb-name';
         label.style.cssText='font-size:.55rem;font-weight:600;color:var(--ink2);max-width:60px;text-align:center;margin-top:.25rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap';
-        btn.insertAdjacentElement('afterend',label);
+        sb.insertAdjacentElement('afterend',label);
       }
       label.textContent=(user.displayName||'').split(' ')[0]||'You';
-    }else{
-      btn.title='Sign in'; btn.style.padding=''; btn.innerHTML=PERSON_SVG;
-      if(label) label.remove();
-    }
+    }else if(label){ label.remove(); }
   }
 
   // ── Friendly error messages ──
