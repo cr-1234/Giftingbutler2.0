@@ -1108,6 +1108,11 @@ body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;bac
 .sb-logo.show{opacity:1;pointer-events:auto}
 /* mobile: hide the whole left sidebar (nav lives in the bottom bar) */
 @media(max-width:768px){.sidebar{display:none!important}}
+/* bottom-bar sign-in: fixed size so the signed-in avatar can't collapse */
+.mb-signin{width:34px!important;height:34px!important;overflow:hidden}
+.mb-signin svg{width:22px;height:22px}
+.mb-signin img{width:100%!important;height:100%!important;border-radius:50%;object-fit:cover}
+.mb-search{color:#4F46E5}
 /* category bar: show a slim draggable scrollbar for mouse-only users */
 #cat-nav{scrollbar-width:thin!important;scrollbar-color:rgba(91,45,142,.35) transparent}
 #cat-nav::-webkit-scrollbar{display:block!important;height:7px}
@@ -1154,8 +1159,8 @@ html{scrollbar-width:thin;scrollbar-color:rgba(91,45,142,.55) rgba(91,45,142,.08
 
 <!-- MOBILE BOTTOM BAR -->
 <nav class="mbar">
-  <button class="mb-btn mb-home" onclick="goHome()">
-    <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
+  <button class="mb-btn mb-search" onclick="mobileSearch()" title="Search">
+    <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
   </button>
   <button class="mb-btn mb-bell" onclick="om('rem-modal')">
     <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/></svg>
@@ -1220,13 +1225,6 @@ html{scrollbar-width:thin;scrollbar-color:rgba(91,45,142,.55) rgba(91,45,142,.08
 </section>
 
 
-<!-- MOBILE: search circle LEFT, btt circle RIGHT — outside the pill -->
-<button class="mob-circle mob-circle-left" onclick="openSearchOverlay()" id="mob-search-circle">
-  <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
-</button>
-<button class="mob-circle mob-circle-right" onclick="window.scrollTo({top:0,behavior:'smooth'})" id="mob-btt-circle" style="opacity:0;pointer-events:none">
-  <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18"><path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
-</button>
 </div><!-- /main -->
 
 
@@ -1476,6 +1474,8 @@ function renderCats(){
 function sc(id){activeCat=id;searchQ='';['search','fsb-input'].forEach(i=>{const el=document.getElementById(i);if(el)el.value=''});renderCats();renderP();document.getElementById('feed').scrollIntoView({behavior:'smooth',block:'start'})}
 // Home / logo: reset to All Gifts and scroll to the very top
 function goHome(){activeCat='all';searchQ='';['search','fsb-input'].forEach(i=>{const el=document.getElementById(i);if(el)el.value=''});renderCats();renderP();window.scrollTo({top:0,behavior:'smooth'})}
+// Mobile search button: jump to the top and focus the search box
+function mobileSearch(){const s=document.getElementById('search');if(!s)return;window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>{try{s.focus();}catch(e){}},350)}
 
 // ══ PRODUCTS ══
 function skeletonRow(n=4){
