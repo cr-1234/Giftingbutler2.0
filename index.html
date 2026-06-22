@@ -67,7 +67,7 @@ body{font-family:'Inter',sans-serif;background:linear-gradient(165deg,#f3effa 0%
 
 /* SHIMMER BANNER — shop.app style image rows fading in */
 .banner-wrap{position:relative;overflow:hidden;width:100%;height:210px;margin-bottom:0;-webkit-mask-image:linear-gradient(to right,transparent,#000 80px,#000 calc(100% - 80px),transparent);mask-image:linear-gradient(to right,transparent,#000 80px,#000 calc(100% - 80px),transparent)}
-.banner-row{display:flex;gap:14px;height:100%;padding:0;width:max-content;will-change:transform;animation:bannerScroll 300s linear infinite}
+.banner-row{display:flex;gap:14px;height:100%;padding:0;width:max-content;will-change:transform;animation:bannerScroll 600s linear infinite}
 .banner-row:hover{animation-play-state:paused}
 @keyframes bannerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 .banner-img{flex-shrink:0;height:100%;border-radius:var(--r3);overflow:hidden;background:var(--parch);position:relative;box-shadow:0 6px 22px rgba(40,20,70,.10)}
@@ -119,8 +119,9 @@ body{font-family:'Inter',sans-serif;background:linear-gradient(165deg,#f3effa 0%
 /* ══ PRODUCT CARD ══ */
 .card{width:200px;flex-shrink:0;background:rgba(255,255,255,.55);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:1px solid rgba(255,255,255,.75);border-radius:var(--r3);overflow:hidden;cursor:pointer;display:flex;flex-direction:column;transition:all .22s var(--ease);box-shadow:0 4px 16px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.95)}
 .card:hover{transform:translateY(-4px);background:rgba(255,255,255,.72);border-color:rgba(91,45,142,.35);box-shadow:0 12px 40px rgba(91,45,142,.14),inset 0 1px 0 rgba(255,255,255,1)}
-.ciw{position:relative;padding-top:110%;background:var(--parch);overflow:hidden}
-.ci{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .4s var(--ease)}
+.ciw{position:relative;padding-top:110%;background:#fff;overflow:hidden}
+.ci{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#fff;box-sizing:border-box;transition:transform .4s var(--ease)}
+.ci.contain{object-fit:contain;padding:8%}
 .card:hover .ci{transform:scale(1.07)}
 .cbadge{position:absolute;top:.6rem;left:.6rem;font-size:8.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;padding:3px 9px;border-radius:50px;z-index:2;color:#fff;background:linear-gradient(135deg,#D4A93A,#A8801A);box-shadow:0 2px 8px rgba(120,90,10,.28),inset 0 1px 0 rgba(255,255,255,.4)}
 .cbadge.b{background:linear-gradient(135deg,#2E7BC4,#16548F);box-shadow:0 2px 8px rgba(20,60,110,.3),inset 0 1px 0 rgba(255,255,255,.35)}.cbadge.g{background:linear-gradient(135deg,#338566,#1E5A42);box-shadow:0 2px 8px rgba(20,70,50,.3),inset 0 1px 0 rgba(255,255,255,.35)}
@@ -148,11 +149,12 @@ body{font-family:'Inter',sans-serif;background:linear-gradient(165deg,#f3effa 0%
 .nores p{font-size:.9rem}
 
 /* ══ SEARCH OVERLAY — shop.app style ══ */
-.search-overlay{position:fixed;inset:0;z-index:900;display:none;flex-direction:column;justify-content:flex-end}
-.search-overlay.open{display:flex}
-.search-overlay-bg{position:absolute;inset:0;background:rgba(0,0,0,.35);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
-.search-overlay-panel{position:relative;z-index:1;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);border-radius:var(--r4) var(--r4) 0 0;padding:1.5rem 1.5rem calc(1.5rem + env(safe-area-inset-bottom));animation:slideUp .28s var(--ease)}
+.search-overlay{position:fixed;top:0;left:0;right:0;z-index:900;display:none}
+.search-overlay.open{display:block}
+.search-overlay-bg{display:none}
+.search-overlay-panel{background:#fff;padding:calc(.55rem + env(safe-area-inset-top)) .85rem .55rem;border-bottom:1px solid rgba(0,0,0,.08);box-shadow:0 4px 16px rgba(40,20,70,.10);animation:slideDown .2s var(--ease)}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes slideDown{from{transform:translateY(-100%)}to{transform:translateY(0)}}
 .search-suggestions{padding:0 0 1.2rem}
 .search-suggestions h4{font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:.75rem}
 .sugg-chips{display:flex;flex-direction:column;gap:.5rem}
@@ -160,11 +162,11 @@ body{font-family:'Inter',sans-serif;background:linear-gradient(165deg,#f3effa 0%
 .sugg-chip:hover{background:var(--parch2)}
 .sugg-chip svg{width:14px;height:14px;color:var(--ink3);flex-shrink:0}
 .search-input-row{display:flex;align-items:center;gap:.75rem}
-.search-ov-input{flex:1;padding:.85rem 1.2rem;border:1.5px solid var(--brd2);border-radius:50px;font-family:'Inter',sans-serif;font-size:1rem;color:var(--ink);background:var(--white);outline:none;transition:all .2s}
+.search-ov-input{flex:1;padding:.55rem 1rem;border:1.5px solid var(--brd2);border-radius:50px;font-family:'Inter',sans-serif;font-size:.95rem;color:var(--ink);background:var(--white);outline:none;transition:all .2s}
 .search-ov-input:focus{border-color:var(--plum);box-shadow:0 0 0 3px var(--plum-lt)}
-.search-ov-go{width:44px;height:44px;background:var(--plum);color:#fff;border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .18s}
+.search-ov-go{width:36px;height:36px;background:var(--plum);color:#fff;border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .18s}
 .search-ov-go:hover{background:var(--plum-md)}
-.search-ov-cancel{background:none;border:none;color:var(--plum);font-size:.85rem;font-weight:700;cursor:pointer;flex-shrink:0;padding:.5rem 0}
+.search-ov-cancel{background:none;border:none;color:var(--plum);font-size:.82rem;font-weight:700;cursor:pointer;flex-shrink:0;padding:.4rem 0}
 
 /* ══ MODALS ══ */
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.42);backdrop-filter:blur(8px);z-index:1000;display:none;align-items:center;justify-content:center;padding:1.25rem}
@@ -233,7 +235,7 @@ body{font-family:'Inter',sans-serif;background:linear-gradient(165deg,#f3effa 0%
 /* Detail */
 .det-grid{display:grid;grid-template-columns:1fr 1.05fr;gap:1.4rem}
 .diw{border-radius:var(--r3);overflow:hidden;background:var(--parch)}
-.dimg{width:100%;display:block;object-fit:cover}
+.dimg{width:100%;display:block;object-fit:contain;background:#fff;max-height:420px}
 .dinf{display:flex;flex-direction:column;gap:.48rem}
 .dbrand{font-size:9px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3)}
 .dtitle{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:500;line-height:1.2}
@@ -316,7 +318,7 @@ footer{background:#0E0E0E;color:rgba(255,255,255,.5);margin-left:var(--sb)}
   .foot-bot{padding:.9rem 1.25rem}
   .foot-aff-inner{flex-direction:column;gap:.5rem}
   .hero{padding:.85rem 1.25rem 0}
-  .hero-text{padding:1.5rem 1.25rem 2rem}
+  .hero-text{padding:1.5rem 1.25rem calc(5rem + env(safe-area-inset-bottom))}
   .cat-bar{top:0;padding:.65rem 1rem}
   .feed{padding:1.25rem 1rem 7rem}
   .card{width:auto}
@@ -325,7 +327,7 @@ footer{background:#0E0E0E;color:rgba(255,255,255,.5);margin-left:var(--sb)}
   .btt{display:none!important}
   .float-search-bar{display:none}
 }
-@media(max-width:480px){.hero-h1{font-size:2rem}.foot-links{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.hero-h1{font-size:2rem}.hero-sub{font-size:.95rem;color:var(--ink2)}.foot-links{grid-template-columns:1fr 1fr}}
 
 /* ═══════════════ POLISH LAYER ═══════════════ */
 /* Ambient aurora — faint depth behind the glass */
@@ -393,7 +395,7 @@ input:focus,.fld select:focus{border-color:var(--plum)!important;box-shadow:0 0 
 .btile{height:100%;flex-shrink:0;position:relative;overflow:hidden;border-radius:var(--r3);background:var(--parch);cursor:pointer;box-shadow:0 6px 20px rgba(40,20,70,.10);transition:transform .3s var(--ease)}
 .btile:hover{transform:scale(1.035)}
 .bshim{position:absolute;inset:0;background:linear-gradient(90deg,#efefef 25%,#e0e0e0 50%,#efefef 75%);background-size:700px 100%;animation:shimmer 1.4s infinite}
-.btile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s ease;display:block}
+.btile img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:6px;opacity:0;transition:opacity .5s ease;display:block}
 
 /* Top-right utility icons — tasteful hover (clean neutral → faint brand tint) */
 .ti-wl:hover{background-image:linear-gradient(135deg,rgba(255,255,255,.7),rgba(255,255,255,.12) 60%),linear-gradient(rgba(192,57,90,.18),rgba(192,57,90,.18));transform:translateY(-2px);box-shadow:0 8px 18px rgba(192,57,90,.24),inset 0 1px 0 rgba(255,255,255,.95)}
@@ -653,7 +655,7 @@ input,.fld select{width:100%;padding:.62rem .9rem;border:1px solid rgba(255,255,
 .topbar{padding:.3rem 2rem!important}
 .hero{padding:.6rem 1.25rem 0!important}
 .hero-h1{font-size:2rem!important;margin-bottom:.35rem!important}
-.hero p{font-size:.88rem!important;margin-bottom:.7rem!important}
+.hero p{font-size:.95rem!important;color:var(--ink2)!important;margin-bottom:.7rem!important}
 
 .banner-wrap{height:280px!important}
 
@@ -728,7 +730,8 @@ input,.fld select{width:100%;padding:.62rem .9rem;border:1px solid rgba(255,255,
 
 /* (4) Kill the search overlay popup completely (now that JS won't open it,
        this also makes any stray .open class do nothing visually) */
-.search-overlay,.search-overlay.open{display:none!important}
+@media(min-width:769px){.search-overlay,.search-overlay.open{display:none!important}}
+@media(max-width:768px){.search-overlay{display:none}.search-overlay.open{display:flex!important}}
 
 /* (5) BACK-TO-TOP — restore the right-side glass circle (was hidden by media query) */
 .mob-btt-circle{position:fixed!important;bottom:1.7rem!important;right:1.2rem!important;width:46px!important;height:46px!important;border-radius:50%!important;background:rgba(255,255,255,.5)!important;backdrop-filter:blur(22px) saturate(180%)!important;-webkit-backdrop-filter:blur(22px) saturate(180%)!important;border:1px solid rgba(255,255,255,.88)!important;color:var(--plum)!important;display:flex!important;align-items:center!important;justify-content:center!important;cursor:pointer!important;z-index:340!important;box-shadow:0 8px 22px rgba(40,20,70,.18),inset 0 1px 0 rgba(255,255,255,.95)!important;transition:all .22s var(--ease)!important}
@@ -1302,8 +1305,9 @@ html{scrollbar-width:thin;scrollbar-color:rgba(91,45,142,.55) rgba(91,45,142,.08
   <div class="modal"><button class="mx" onclick="cm('gw-modal')">✕</button>
     <div class="mhd"><div class="gwb"><div style="font-size:2rem;margin-bottom:.28rem">🎁</div><h3>Weekly Gift Card Giveaway</h3><p>More entries = bigger prize for everyone!</p><div class="ppill">Amazon Gift Card — <span id="prize-lbl">$10</span></div><div class="tiers" id="tier-row"><div class="tier"><span class="tp">$5</span></div><div class="tier"><span class="tp">$10</span><span class="tt">100+</span></div><div class="tier"><span class="tp">$25</span><span class="tt">250+</span></div><div class="tier"><span class="tp">$50</span><span class="tt">1K+</span></div><div class="tier"><span class="tp">$75</span><span class="tt">5K+</span></div><div class="tier"><span class="tp">$100</span><span class="tt">10K+</span></div></div><p class="ec"><strong id="ec-num">0</strong> entries this week</p><div class="pgbar"><div class="pgfill" id="pgfill" style="width:0%"></div></div></div></div>
     <div class="mbd" style="padding-top:.65rem">
-      <div id="gw-form"><div class="fld"><label>Your Email</label><input type="email" id="gw-email" placeholder="you@example.com"></div><button class="btn btn-gold btn-full" onclick="submitGW()">🎁 Enter This Week's Giveaway</button><p style="font-size:.67rem;color:var(--ink3);text-align:center;margin-top:.5rem;line-height:1.5">1 entry per week · Winner announced every Sunday</p></div>
-      <div id="gw-done" style="display:none;text-align:center;padding:.65rem 0"><div style="font-size:2.3rem;margin-bottom:.4rem">🎉</div><div class="mh2" style="font-size:1.2rem">You're entered!</div><p style="color:var(--ink3);font-size:.78rem;margin-top:.25rem">Winner announced every Sunday. Good luck!</p></div>
+      <div id="gw-winner" style="display:none;text-align:center;margin:0 0 .85rem;padding:.6rem .75rem;border-radius:.6rem;background:linear-gradient(135deg,rgba(192,57,43,.12),rgba(184,134,11,.14));border:1px solid rgba(184,134,11,.35)"><span style="font-size:.82rem;color:var(--ink2)">🏆 Last week's winner: <strong id="gw-winner-email" style="color:#b8860b"></strong></span><br><span style="font-size:.68rem;color:var(--ink3)">Winners are notified by email — check your spam folder!</span></div>
+      <div id="gw-form"><div class="fld"><label>Your Email</label><input type="email" id="gw-email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')submitGW()"></div><button class="btn btn-gold btn-full" onclick="submitGW()">🎁 Enter This Week's Giveaway</button><p style="font-size:.67rem;color:var(--ink3);text-align:center;margin-top:.5rem;line-height:1.5">1 entry per week · Winner announced every Sunday</p></div>
+      <div id="gw-done" style="display:none;text-align:center;padding:.65rem 0"><div style="font-size:2.3rem;margin-bottom:.4rem">🎉</div><div class="mh2" style="font-size:1.2rem">You're entered!</div><p style="color:var(--ink3);font-size:.78rem;margin-top:.25rem">We just emailed your confirmation — <strong style="color:#b8860b">check your inbox &amp; spam folder</strong> (it may land there).</p><p style="color:var(--ink3);font-size:.78rem;margin-top:.4rem">Winner announced every Sunday — we'll email the winner, so keep an eye on your spam folder too. Good luck! 🍀</p></div>
     </div>
   </div>
 </div>
@@ -1339,13 +1343,14 @@ html{scrollbar-width:thin;scrollbar-color:rgba(91,45,142,.55) rgba(91,45,142,.08
     <div class="mbd" style="padding-top:0">
       <form onsubmit="addReminder(event)">
         <div class="fld"><label>Occasion Name</label><input type="text" id="rem-event" placeholder="e.g. Mom's Birthday, Bar Mitzvah"></div>
+        <label style="display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:var(--ink2);margin:.1rem 0 .6rem;cursor:pointer"><input type="checkbox" id="rem-yearly" checked onchange="toggleYearly()" style="width:auto;margin:0">Repeat every year</label>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem">
           <div class="fld"><label>Month</label><select id="rem-month"><option value="1">Jan</option><option value="2">Feb</option><option value="3">Mar</option><option value="4">Apr</option><option value="5">May</option><option value="6">Jun</option><option value="7">Jul</option><option value="8">Aug</option><option value="9">Sep</option><option value="10">Oct</option><option value="11">Nov</option><option value="12">Dec</option></select></div>
           <div class="fld"><label>Day</label><select id="rem-day"></select></div>
-          <div class="fld"><label>Year <span style="font-weight:400;font-size:.6rem;text-transform:none;letter-spacing:0;color:var(--ink3)">optional</span></label><input type="number" id="rem-year" placeholder="e.g. 2027" min="2024" max="2040" style="padding:.6rem .5rem"></div>
+          <div class="fld"><label>Year <span id="rem-year-hint" style="font-weight:400;font-size:.6rem;text-transform:none;letter-spacing:0;color:var(--ink3)">n/a</span></label><input type="number" id="rem-year" placeholder="every year" min="2024" max="2040" disabled style="padding:.6rem .5rem"></div>
         </div>
-        <div class="fld"><label>Alert Me</label><select id="rem-time"><option value="1_month">1 Month Before</option><option value="2_weeks">2 Weeks Before</option><option value="1_week" selected>1 Week Before</option><option value="3_days">3 Days Before</option></select></div>
-        <button type="submit" class="btn btn-gold btn-full">🔔 Save Reminder</button>
+        <div class="fld"><label>Alert Me</label><select id="rem-time" onchange="toggleCustomLead()"><option value="1_month">1 Month Before</option><option value="1_week" selected>1 Week Before</option><option value="3_days">3 Days Before</option><option value="same_day">On the Day</option><option value="custom">Custom…</option></select><div id="rem-custom-wrap" style="display:none;margin-top:.5rem"><div style="display:grid;grid-template-columns:1fr 1.4fr;gap:.5rem"><input type="number" id="rem-custom" min="0" max="365" placeholder="e.g. 2" style="padding:.6rem .5rem"><select id="rem-custom-unit"><option value="m">Months before</option><option value="w">Weeks before</option><option value="d" selected>Days before</option></select></div></div></div>
+        <button type="submit" id="rem-save-btn" class="btn btn-gold btn-full">🔔 Save Reminder</button>
       </form>
       <div id="rem-list" style="margin-top:.95rem"></div>
     </div>
@@ -1429,12 +1434,161 @@ const P=[
   {id:22,title:"LEGO Architecture Landmark Set",brand:"LEGO",price:54.99,cats:["children-9-12","children-4-8","grandchildren","birthday","bar-mitzvah"],img:"https://images.unsplash.com/photo-1619946794135-5bc917a27793?w=1000&auto=format&fit=crop&crop=entropy&q=85",desc:"Challenging LEGO Architecture set featuring iconic world landmarks.",url:"https://www.amazon.com/s?k=LEGO%20Architecture%20Landmark%20Set&tag=giftingbutler-20",badge:"Classic",bs:""},
   {id:23,title:"Purim Crown & Costume Box",brand:"DressUpKing",price:89,cats:["purim","children-u3","children-4-8","grandchildren"],img:"https://images.unsplash.com/photo-1606791422814-be32c8209616?w=1000&auto=format&fit=crop&crop=entropy&q=85",desc:"Family Purim kit — crowns, capes, accessories. Reusable.",url:"https://www.amazon.com/s?k=Purim%20Crown%20Costume%20Box&tag=giftingbutler-20",badge:"Purim Fun",bs:""},
   {id:24,title:"Modern Silver Shabbat Candlesticks",brand:"SterlingCrown",price:135,cats:["wedding","housewarming","bat-mitzvah","anniversary","her"],img:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1000&auto=format&fit=crop&crop=entropy&q=85",desc:"Elegant sterling silver Shabbat candlesticks. A cherished keepsake.",url:"https://www.amazon.com/s?k=Modern%20Silver%20Shabbat%20Candlesticks&tag=giftingbutler-20",badge:"Heirloom",bs:""},
+  // ── Expanded catalog (your full gift list; duplicates merged) ──
+  {id:25,title:"Bedside Men's Valet Stand",brand:"Verona",price:49.99,cats:["him","decor","birthday","anniversary"],desc:"Bedside valet to organize keys, wallet, watch and phone overnight.",emoji:"🧳",pal:0,badge:"Organizer",bs:""},
+  {id:26,title:"Naki Radio Kids Music Player",brand:"Naki",price:59.99,cats:["children-u3","children-4-8","tech","grandchildren"],desc:"Screen-free kids music and story player loaded with wholesome content.",emoji:"📻",pal:1,badge:"Kids Fave",bs:"g"},
+  {id:27,title:"Ami Magazine Subscription",brand:"Ami",price:24.99,cats:["books","him","her"],desc:"Weekly Jewish lifestyle and news magazine subscription.",emoji:"📰",pal:2,badge:"",bs:""},
+  {id:28,title:"Mishpacha Magazine Subscription",brand:"Mishpacha",price:24.99,cats:["books","him","her"],desc:"Family-favorite weekly Jewish magazine subscription.",emoji:"📰",pal:3,badge:"",bs:""},
+  {id:29,title:"24Six Kosher Music Player",brand:"24Six",price:79.99,cats:["tech","him","books"],desc:"Filtered kosher music streaming player for the whole family.",emoji:"🎵",pal:4,badge:"",bs:"b"},
+  {id:30,title:"Newspaper & Magazine Stand Rack",brand:"HomeStyle",price:39.99,cats:["decor","him","housewarming"],desc:"Freestanding rack to keep newspapers and magazines tidy.",emoji:"🗞️",pal:5,badge:"",bs:""},
+  {id:31,title:"Scented Candles Gift Set",brand:"Aromabliss",price:29.99,cats:["decor","wellness","her","housewarming","birthday"],desc:"Hand-poured aromatherapy candle set in calming fragrances.",emoji:"🕯️",pal:0,badge:"Cozy",bs:"g"},
+  {id:32,title:"Scented Plug-In Air Freshener",brand:"FreshHome",price:19.99,cats:["decor","wellness","housewarming"],desc:"Plug-in diffuser that keeps any room smelling fresh.",emoji:"🌸",pal:1,badge:"",bs:""},
+  {id:33,title:"Scented Reed Diffuser",brand:"Aromabliss",price:24.99,cats:["decor","wellness","her","housewarming"],desc:"Elegant reed diffuser for long-lasting ambient fragrance.",emoji:"🪔",pal:2,badge:"",bs:""},
+  {id:34,title:"Car Air Freshener Scent",brand:"AutoFresh",price:12.99,cats:["him","tech"],desc:"Long-lasting vent-clip car fragrance in fresh scents.",emoji:"🚗",pal:3,badge:"",bs:""},
+  {id:35,title:"Personalized Hand Towels",brand:"MonogramCo",price:27.99,cats:["housewarming","wedding","her"],desc:"Soft monogrammed hand towels, personalized with any initials.",emoji:"🧺",pal:4,badge:"Personalized",bs:""},
+  {id:36,title:"Personalized Robe",brand:"MonogramCo",price:39.99,cats:["her","him","anniversary","wedding","wellness"],desc:"Plush embroidered robe customized with a name or monogram.",emoji:"🥼",pal:5,badge:"Personalized",bs:""},
+  {id:37,title:"Personalized Blanket",brand:"CozyPrint",price:44.99,cats:["her","him","baby","anniversary","housewarming","grandchildren"],desc:"Custom-printed cozy blanket with name, photo or design.",emoji:"🛋️",pal:0,badge:"Personalized",bs:"g"},
+  {id:38,title:"Personalized Bath Towels",brand:"MonogramCo",price:34.99,cats:["housewarming","wedding"],desc:"Luxury monogrammed bath towel set.",emoji:"🛁",pal:1,badge:"",bs:""},
+  {id:39,title:"Perfume & Cologne Gift Set",brand:"Maison",price:64.99,cats:["her","him","anniversary","birthday"],desc:"Designer fragrance gift set for him or her.",emoji:"🌺",pal:2,badge:"Bestseller",bs:""},
+  {id:40,title:"Car Hanging Air Freshener",brand:"AutoFresh",price:11.99,cats:["him"],desc:"Decorative hanging car freshener with a clean, lasting scent.",emoji:"🎐",pal:3,badge:"",bs:""},
+  {id:41,title:"Steering Wheel Cover",brand:"AutoLux",price:21.99,cats:["him"],desc:"Premium grip steering wheel cover for a comfortable drive.",emoji:"🛞",pal:4,badge:"",bs:""},
+  {id:42,title:"Kids Backyard Swing Set",brand:"PlayHaven",price:199.99,cats:["children-4-8","children-9-12","grandchildren"],desc:"Sturdy outdoor swing set for hours of backyard fun.",emoji:"🛝",pal:5,badge:"",bs:""},
+  {id:43,title:"Ice Cream Maker Machine",brand:"ChillCo",price:69.99,cats:["food","housewarming","birthday"],desc:"Make fresh homemade ice cream, gelato and sorbet at home.",emoji:"🍦",pal:0,badge:"",bs:""},
+  {id:44,title:"Countertop Ice Maker Machine",brand:"ChillCo",price:129.99,cats:["food","housewarming","tech"],desc:"Fast countertop ice maker — ready ice in minutes.",emoji:"🧊",pal:1,badge:"Top Rated",bs:"b"},
+  {id:45,title:"Leather Wallet",brand:"Tannery",price:34.99,cats:["him","birthday","anniversary"],desc:"Slim full-grain leather wallet with RFID protection.",emoji:"👛",pal:2,badge:"",bs:""},
+  {id:46,title:"Designer Handbag Purse",brand:"Vellora",price:89.99,cats:["her","birthday","anniversary","bat-mitzvah"],desc:"Elegant designer-style handbag for everyday luxury.",emoji:"👜",pal:3,badge:"Elegant",bs:""},
+  {id:47,title:"Phone Case",brand:"CaseCraft",price:16.99,cats:["tech","him","her","children-9-12"],desc:"Protective shockproof phone case in many styles.",emoji:"📱",pal:4,badge:"",bs:""},
+  {id:48,title:"Fine Jewelry Set",brand:"LuxeChain",price:79.99,cats:["jewelry","her","bat-mitzvah","anniversary","wedding"],desc:"Coordinated necklace and earring jewelry gift set.",emoji:"💎",pal:5,badge:"Luxury",bs:""},
+  {id:49,title:"Spa & Massage Gift Set",brand:"Serenity",price:54.99,cats:["wellness","her","anniversary","birthday"],desc:"At-home spa and massage relaxation gift box.",emoji:"💆",pal:0,badge:"Self-Care",bs:"g"},
+  {id:50,title:"Chocolate Platter Gift Box",brand:"ChocolAtelier",price:49.99,cats:["food","wedding","anniversary","housewarming","purim"],desc:"Gourmet assorted chocolate platter, beautifully presented.",emoji:"🍫",pal:1,badge:"Gourmet",bs:""},
+  {id:51,title:"Amazon Gift Card",brand:"Amazon",price:50,cats:["birthday","wedding","bar-mitzvah","bat-mitzvah","him","her"],desc:"The always-welcome gift — let them choose exactly what they want.",emoji:"🎟️",pal:2,badge:"",bs:""},
+  {id:52,title:"Personalized Baby Elephant Plush",brand:"LoomyBaby",price:29.99,cats:["baby","children-u3","grandchildren"],desc:"Soft elephant plush embroidered with baby's name.",emoji:"🐘",pal:3,badge:"Personalized",bs:"g"},
+  {id:53,title:"Pacifier Clip",brand:"LoomyBaby",price:12.99,cats:["baby","children-u3"],desc:"Cute, secure pacifier clip that keeps soothers off the floor.",emoji:"🍼",pal:4,badge:"",bs:""},
+  {id:54,title:"Doona Car Seat Stroller",brand:"Doona",price:550,cats:["baby","children-u3"],desc:"Award-winning car seat that converts to a stroller in seconds.",emoji:"🚼",pal:5,badge:"Premium",bs:""},
+  {id:55,title:"Baby Travel System Carriage",brand:"Carriage Co",price:299.99,cats:["baby","children-u3"],desc:"Complete travel-system carriage with car seat and bassinet.",emoji:"🛒",pal:0,badge:"",bs:""},
+  {id:56,title:"Butterfly Folding Stroller",brand:"Bugaboo",price:399.99,cats:["baby","children-u3"],desc:"Ultra-compact one-hand folding travel stroller.",emoji:"🦋",pal:1,badge:"",bs:""},
+  {id:57,title:"Preserved Roses in Acrylic Box",brand:"Everbloom",price:59.99,cats:["her","anniversary","wedding","bat-mitzvah"],desc:"Real preserved roses that last for years in a clear lucite box.",emoji:"🌹",pal:2,badge:"Forever",bs:""},
+  {id:58,title:"Robot Vacuum Cleaner",brand:"iRobot Roomba",price:249.99,cats:["tech","housewarming","wedding"],desc:"Smart robot vacuum that cleans floors on a schedule.",emoji:"🤖",pal:3,badge:"Top Rated",bs:"b"},
+  {id:59,title:"Tablet Computer",brand:"TechPro",price:159.99,cats:["tech","children-9-12","bar-mitzvah","bat-mitzvah"],desc:"Versatile tablet for learning, reading and entertainment.",emoji:"💻",pal:4,badge:"",bs:""},
+  {id:60,title:"Wireless Earbuds",brand:"SoundLux",price:49.99,cats:["tech","him","her","bar-mitzvah","bat-mitzvah","birthday"],desc:"True wireless earbuds with crisp sound and long battery life.",emoji:"🎧",pal:5,badge:"Bestseller",bs:""},
+  {id:61,title:"Bluetooth Speaker",brand:"SoundLux",price:39.99,cats:["tech","him","her","birthday"],desc:"Portable waterproof Bluetooth speaker with big sound.",emoji:"🔊",pal:0,badge:"",bs:""},
+  {id:62,title:"Kids Art & Craft Set",brand:"ArtJoy",price:29.99,cats:["children-4-8","children-9-12","grandchildren"],desc:"All-in-one art and craft kit to spark creativity.",emoji:"🎨",pal:1,badge:"Creative",bs:"g"},
+  {id:63,title:"Electric Scooter",brand:"GlideX",price:279.99,cats:["tech","him","children-9-12"],desc:"Foldable electric scooter for easy commuting and fun.",emoji:"🛴",pal:2,badge:"",bs:""},
+  {id:64,title:"Kids Bike & Scooter",brand:"RideOn",price:89.99,cats:["children-4-8","children-9-12","grandchildren"],desc:"Durable kids bike and scooter for outdoor adventures.",emoji:"🚲",pal:3,badge:"",bs:""},
+  {id:65,title:"Electric Ride-On Kids Car",brand:"RideOn",price:199.99,cats:["children-u3","children-4-8","grandchildren"],desc:"Battery-powered ride-on car with realistic features.",emoji:"🚗",pal:4,badge:"Kids Fave",bs:""},
+  {id:66,title:"Kids Outdoor Slide",brand:"PlayHaven",price:79.99,cats:["children-u3","children-4-8"],desc:"Safe, sturdy slide for indoor or backyard play.",emoji:"🛝",pal:5,badge:"",bs:""},
+  {id:67,title:"Waterdale Acrylic Judaica",brand:"Waterdale",price:44.99,cats:["decor","housewarming","wedding","rosh-hashana"],desc:"Designer acrylic Judaica and tableware accents.",emoji:"🍷",pal:0,badge:"",bs:""},
+  {id:68,title:"Baby Clothes Gift Set",brand:"LoomyBaby",price:34.99,cats:["baby","children-u3","grandchildren"],desc:"Soft organic-cotton baby outfit gift set.",emoji:"👶",pal:1,badge:"",bs:""},
+  {id:69,title:"Floating Pen Novelty",brand:"NoveltyCo",price:9.99,cats:["children-9-12","books","bar-mitzvah"],desc:"Fun floating-action novelty pen — a great small gift.",emoji:"🖊️",pal:2,badge:"",bs:""},
+  {id:70,title:"Mini Projector",brand:"CineCast",price:89.99,cats:["tech","him","birthday"],desc:"Compact home projector for movie nights anywhere.",emoji:"📽️",pal:3,badge:"",bs:""},
+  {id:71,title:"Ice Bullet Mold & Shot Glasses",brand:"BarCraft",price:19.99,cats:["him","lchaim-vort","housewarming"],desc:"Bullet-shaped ice molds with matching shot glasses.",emoji:"🥃",pal:4,badge:"",bs:""},
+  {id:72,title:"3D Printer",brand:"MakerBot",price:229.99,cats:["tech","him","children-9-12"],desc:"Easy-to-use 3D printer for makers and creators.",emoji:"🖨️",pal:5,badge:"Maker",bs:"b"},
+  {id:73,title:"Sterling Silver Gift",brand:"SterlingCrown",price:120,cats:["wedding","anniversary","bar-mitzvah","housewarming"],desc:"Fine sterling silver keepsake — a treasured heirloom gift.",emoji:"🥈",pal:0,badge:"Heirloom",bs:""},
+  {id:74,title:"Butterfly Decorative Wall Art",brand:"DecoNest",price:24.99,cats:["decor","her","bat-mitzvah","housewarming"],desc:"Set of decorative butterfly accents for walls and shelves.",emoji:"🦋",pal:1,badge:"",bs:""},
+  {id:75,title:"Indoor House Plant",brand:"GreenLeaf",price:29.99,cats:["decor","housewarming","wellness"],desc:"Easy-care live house plant in a stylish pot.",emoji:"🪴",pal:2,badge:"",bs:"g"},
+  {id:76,title:"BBQ Grill",brand:"GrillMaster",price:179.99,cats:["him","housewarming","food"],desc:"Versatile outdoor grill for backyard cookouts.",emoji:"🔥",pal:3,badge:"",bs:""},
+  {id:77,title:"Newhaus Aperitif Gift",brand:"Haus",price:39.99,cats:["food","him","housewarming","lchaim-vort"],desc:"Craft aperitif gift — a sophisticated toast.",emoji:"🍸",pal:4,badge:"",bs:""},
+  {id:78,title:"Bath & Body Works Gift Set",brand:"Bath & Body Works",price:39.99,cats:["wellness","her","birthday"],desc:"Signature bath and body fragrance gift set.",emoji:"🧴",pal:5,badge:"",bs:""},
+  {id:79,title:"Wooden Shtender Book Stand",brand:"JudaicaCraft",price:69.99,cats:["bar-mitzvah","books","him","housewarming"],desc:"Handsome adjustable wooden shtender / book stand.",emoji:"📚",pal:0,badge:"",bs:""},
+  {id:80,title:"Digital Camera",brand:"PixPro",price:189.99,cats:["tech","him","her","bar-mitzvah","bat-mitzvah"],desc:"Easy-to-use digital camera for capturing memories.",emoji:"📷",pal:1,badge:"",bs:""},
+  {id:81,title:"Charcuterie Meat Board",brand:"OakCraft",price:44.99,cats:["food","wedding","housewarming","anniversary"],desc:"Premium acacia charcuterie board with serving tools.",emoji:"🧀",pal:2,badge:"",bs:""},
+  {id:82,title:"Schnapps Decanter Set",brand:"BarCraft",price:49.99,cats:["him","lchaim-vort","housewarming"],desc:"Elegant glass decanter set for schnapps and spirits.",emoji:"🍾",pal:3,badge:"",bs:""},
+  {id:83,title:"Electronic Dance Pad Game",brand:"FitFun",price:49.99,cats:["children-9-12","children-4-8","tech"],desc:"Music dance mat that gets kids moving and laughing.",emoji:"🕺",pal:4,badge:"",bs:""},
+  {id:84,title:"LED Countdown Clock",brand:"TimeKeeper",price:29.99,cats:["decor","tech","him"],desc:"Digital countdown clock for big days and events.",emoji:"⏰",pal:5,badge:"",bs:""},
+  {id:85,title:"Michael Kors Watch",brand:"Michael Kors",price:149.99,cats:["her","him","bat-mitzvah","bar-mitzvah","anniversary"],desc:"Designer Michael Kors watch — timeless and refined.",emoji:"⌚",pal:0,badge:"Designer",bs:""},
+  {id:86,title:"Casio Watch",brand:"Casio",price:49.99,cats:["him","bar-mitzvah","birthday","tech"],desc:"Reliable classic Casio watch built to last.",emoji:"⌚",pal:1,badge:"Classic",bs:"b"},
+  {id:87,title:"Espresso & Coffee Maker",brand:"BrewLux",price:129.99,cats:["food","housewarming","wedding","him","her"],desc:"Barista-style espresso and coffee machine for home.",emoji:"☕",pal:2,badge:"Top Rated",bs:""},
+  {id:88,title:"Nice Picture Frame",brand:"FrameWorks",price:24.99,cats:["decor","housewarming","wedding","anniversary"],desc:"Elegant frame to showcase a cherished photo.",emoji:"🖼️",pal:3,badge:"",bs:""},
+  {id:89,title:"Custom Family Photo Print",brand:"FrameWorks",price:34.99,cats:["decor","anniversary","housewarming","her"],desc:"Framed custom print of a favorite family photo.",emoji:"📸",pal:4,badge:"Personalized",bs:""},
+  {id:90,title:"Bracelet, Earrings & Ring Set",brand:"LuxeChain",price:44.99,cats:["jewelry","her","bat-mitzvah","anniversary","birthday"],desc:"Matching bracelet, earring and ring jewelry set.",emoji:"💍",pal:5,badge:"",bs:""},
+  {id:91,title:"Jump Rope",brand:"FitFun",price:9.99,cats:["children-4-8","children-9-12"],desc:"Adjustable jump rope for active outdoor play.",emoji:"🪢",pal:0,badge:"",bs:""},
+  {id:92,title:"Chinese Jump Rope",brand:"FitFun",price:7.99,cats:["children-4-8","children-9-12"],desc:"Classic stretchy Chinese jump rope for group games.",emoji:"🪢",pal:1,badge:"",bs:""},
+  {id:93,title:"Kugelach Jacks Game",brand:"ClassicPlay",price:8.99,cats:["children-4-8","children-9-12","bat-mitzvah"],desc:"Traditional kugelach / jacks game set.",emoji:"🎯",pal:2,badge:"",bs:""},
+  {id:94,title:"Sticker Book & Sticker Set",brand:"StickerJoy",price:12.99,cats:["children-u3","children-4-8"],desc:"Reusable sticker book bursting with fun stickers.",emoji:"🌟",pal:3,badge:"",bs:""},
+  {id:95,title:"Stationery Gift Set",brand:"InkHaven",price:19.99,cats:["her","books","bat-mitzvah","birthday"],desc:"Beautiful stationery set with notecards and pen.",emoji:"✒️",pal:4,badge:"",bs:""},
+  {id:96,title:"Bestselling Books",brand:"BookNook",price:24.99,cats:["books","him","her","bar-mitzvah"],desc:"Highly-rated bestselling books across genres.",emoji:"📕",pal:5,badge:"",bs:""},
+  {id:97,title:"Seforim Hebrew Books",brand:"ArtScroll",price:49.99,cats:["books","bar-mitzvah","him"],desc:"Classic seforim and Hebrew learning books.",emoji:"📖",pal:0,badge:"Torah",bs:"b"},
+  {id:98,title:"Kids Prize Box Toy Assortment",brand:"PartyJoy",price:24.99,cats:["children-u3","children-4-8"],desc:"Assorted small toys to fill a kids' prize box.",emoji:"🎁",pal:1,badge:"",bs:""},
+  {id:99,title:"Kids Wallet",brand:"RideOn",price:11.99,cats:["children-4-8","children-9-12"],desc:"Fun first wallet to help kids learn to save.",emoji:"👛",pal:2,badge:"",bs:""},
+  {id:100,title:"Etch A Sketch",brand:"Etch A Sketch",price:14.99,cats:["children-4-8","children-9-12","grandchildren"],desc:"The timeless drawing toy loved across generations.",emoji:"🎨",pal:3,badge:"Classic",bs:""},
+  {id:101,title:"Toy Trucks",brand:"RideOn",price:19.99,cats:["children-u3","children-4-8","grandchildren"],desc:"Tough toy trucks built for indoor and sandbox play.",emoji:"🚚",pal:4,badge:"",bs:""},
+  {id:102,title:"LEGO Building Set",brand:"LEGO",price:49.99,cats:["children-4-8","children-9-12","bar-mitzvah","grandchildren"],desc:"Creative LEGO building set for hours of fun.",emoji:"🧱",pal:5,badge:"Classic",bs:""},
+  {id:103,title:"Magnetic Tiles Building Set",brand:"MagBlocks",price:39.99,cats:["children-u3","children-4-8","grandchildren"],desc:"Colorful magnetic tiles for open-ended STEM building.",emoji:"🔷",pal:0,badge:"STEM",bs:"g"},
+  {id:104,title:"Kids Flashlight",brand:"AdventureKids",price:12.99,cats:["children-4-8","children-9-12"],desc:"Durable kid-friendly flashlight for adventures.",emoji:"🔦",pal:1,badge:"",bs:""},
+  {id:105,title:"Kids Microscope",brand:"RoboEdu",price:34.99,cats:["children-9-12","bar-mitzvah","tech"],desc:"Beginner microscope to explore the tiny world.",emoji:"🔬",pal:2,badge:"STEM",bs:"b"},
+  {id:106,title:"Lincoln Logs Building Set",brand:"Lincoln Logs",price:29.99,cats:["children-4-8","children-9-12","grandchildren"],desc:"Classic wooden Lincoln Logs construction set.",emoji:"🪵",pal:3,badge:"",bs:""},
+  {id:107,title:"Kids Tool Box Set",brand:"BuilderKids",price:24.99,cats:["children-4-8","children-9-12"],desc:"Pretend-play tool box that sparks little builders.",emoji:"🧰",pal:4,badge:"",bs:""},
+  {id:108,title:"Tool Set",brand:"HandyPro",price:59.99,cats:["him","housewarming"],desc:"Complete home tool set for every fix-it job.",emoji:"🔧",pal:5,badge:"",bs:""},
+  {id:109,title:"Kids Tool Set",brand:"BuilderKids",price:19.99,cats:["children-4-8","children-9-12"],desc:"Safe, realistic tool set made just for kids.",emoji:"🔨",pal:0,badge:"",bs:""},
+  {id:110,title:"Framed Painting Wall Art",brand:"DecoNest",price:49.99,cats:["decor","housewarming","wedding","anniversary"],desc:"Gallery-style framed painting to elevate any room.",emoji:"🖼️",pal:1,badge:"",bs:""},
+  {id:111,title:"Board Game Set Chess Risk",brand:"ClassicPlay",price:39.99,cats:["children-9-12","him","bar-mitzvah","books"],desc:"Family board game collection — chess, Risk and more.",emoji:"♟️",pal:2,badge:"Family",bs:""},
+  {id:112,title:"Family Swimming Pool",brand:"SplashCo",price:99.99,cats:["children-u3","children-4-8"],desc:"Easy-set family pool for summer backyard fun.",emoji:"🏊",pal:3,badge:"",bs:""},
+  {id:113,title:"Designer Shoes",brand:"Footwear Co",price:79.99,cats:["him","her","birthday"],desc:"Stylish designer shoes for everyday wear.",emoji:"👞",pal:4,badge:"",bs:""},
+  {id:114,title:"Silk Necktie",brand:"Tannery",price:24.99,cats:["him","bar-mitzvah","wedding","anniversary"],desc:"Premium silk necktie in refined patterns.",emoji:"👔",pal:5,badge:"",bs:""},
+  {id:115,title:"Custom Tailored Suit",brand:"Bespoke",price:299.99,cats:["him","wedding","bar-mitzvah"],desc:"Made-to-measure tailored suit for a perfect fit.",emoji:"🤵",pal:0,badge:"Premium",bs:""},
+  {id:117,title:"Travel Tie Holder Case",brand:"Tannery",price:17.99,cats:["him","wedding"],desc:"Compact travel case that keeps ties crease-free.",emoji:"🧳",pal:2,badge:"",bs:""},
+  {id:118,title:"Electric Tie Rack Organizer",brand:"ClosetPro",price:49.99,cats:["him","decor"],desc:"Motorized tie rack that rotates at the touch of a button.",emoji:"👔",pal:3,badge:"",bs:""},
+  {id:119,title:"AirTag & Item Tracker",brand:"TrackIt",price:29.99,cats:["tech","him","her"],desc:"Bluetooth tracker to find keys, bags and luggage.",emoji:"📍",pal:4,badge:"Top Rated",bs:"b"},
+  {id:120,title:"Designer Pen",brand:"InkHaven",price:39.99,cats:["him","her","books","bar-mitzvah"],desc:"Refined designer pen in a gift box.",emoji:"🖋️",pal:5,badge:"Elegant",bs:""},
+  {id:121,title:"Designer Sunglasses",brand:"ShadeLux",price:59.99,cats:["him","her","birthday"],desc:"UV-protective designer sunglasses with a luxe look.",emoji:"🕶️",pal:0,badge:"Designer",bs:""},
+  {id:122,title:"Designer Belt",brand:"Tannery",price:49.99,cats:["him","birthday"],desc:"Genuine leather designer belt with signature buckle.",emoji:"🧷",pal:1,badge:"Designer",bs:""},
+  {id:123,title:"Designer Bangles",brand:"LuxeChain",price:34.99,cats:["jewelry","her","bat-mitzvah","anniversary"],desc:"Stackable designer bangles with elegant finish.",emoji:"💫",pal:2,badge:"",bs:""},
+  {id:124,title:"3D Crystal Laser Photo",brand:"CrystalArt",price:39.99,cats:["decor","anniversary","wedding","her","housewarming"],desc:"Laser-etched 3D crystal keepsake of a favorite photo.",emoji:"💠",pal:3,badge:"Personalized",bs:"g"},
+  {id:125,title:"Acrylic Folding Luggage Rack",brand:"Sumerflos",price:69.99,cats:["housewarming","him","her","birthday"],desc:"Stylish acrylic folding luggage rack — a sleek and practical addition to any guest room.",emoji:"🧳",pal:4,badge:"Trending",bs:""},
+  {id:126,title:"Hydroponics Herb Garden (12-Pod, LED)",brand:"Ahopegarden",price:59.99,cats:["housewarming","her","him","birthday"],desc:"12-pod indoor hydroponics garden with full-spectrum LED — grow fresh herbs year-round.",emoji:"🌿",pal:2,badge:"Unique",bs:""}
 ];
+
+// ── Amazon affiliate search link: sorted by customer review, filtered to 4★ & up, with associate tag ──
+function amzn(kw){return 'https://www.amazon.com/s?k='+encodeURIComponent(kw)+'&i=aps&s=review-rank&rh=p_72%3A1248882011&tag=giftingbutler-20';}
+// ── Real, people-free product photos (verified Unsplash). Each new item maps to the closest by theme. ──
+function ip(id){return 'https://images.unsplash.com/photo-'+id+'?w=1000&auto=format&fit=crop&crop=entropy&q=85';}
+const IMG={
+  mirror:ip('1618220179428-22790b461013'),swaddle:ip('1586015555751-63bb77f4322a'),kiddushcup:ip('1544716278-ca5e3f4abd8c'),
+  giftbox:ip('1513201099705-a9746e1e201f'),mezuzah:ip('1513519245088-0e12902e5a38'),keyboard:ip('1587829741301-dc798b83add3'),
+  serving:ip('1506880018603-83d5b814b5a6'),lamp:ip('1565814329452-e1efa11c5b89'),playgym:ip('1515488042361-ee00e0ddd4e4'),
+  robot:ip('1485827404703-89b55fcc595e'),sketch:ip('1611532736597-de2d4265fba3'),havdalah:ip('1617791160536-598cf32026fb'),
+  honeybox:ip('1568624586078-baf1f9d7dc17'),spa:ip('1608248543803-ba4f8c70ae0b'),menorah:ip('1512389142860-9c449e58a543'),
+  jewelry:ip('1599643478518-a784e5dc4c8f'),frame:ip('1444703686981-a3abbc4d4fe3'),audio:ip('1505740420928-5e560c06d30e'),
+  books:ip('1481627834876-b7833e8f5570'),chocolate:ip('1549007994-cb92caebd54b'),journal:ip('1519791883288-dc8bd696e667'),
+  lego:ip('1619946794135-5bc917a27793'),costume:ip('1606791422814-be32c8209616'),candlesticks:ip('1558618666-fcd25c85cd64')
+};
+function pickImg(p){
+  var t=(p.title+' '+(p.cats||[]).join(' ')).toLowerCase();
+  var has=function(){for(var i=0;i<arguments.length;i++){if(t.indexOf(arguments[i])>=0)return true;}return false;};
+  if(has('jewel','ring','bangle','bracelet','earring','pendant','necklace','watch','crystal')) return IMG.jewelry;
+  if(has('keyboard')) return IMG.keyboard;
+  if(has('headphone','earbud','speaker','audio','radio','music')) return IMG.audio;
+  if(has('robot','microscope','dance','3d printer','printer','scooter','car','tracker','airtag')) return IMG.robot;
+  if(has('tablet','computer','phone','projector','camera','tech','gadget')) return IMG.keyboard;
+  if(has('lamp','clock','countdown')) return IMG.lamp;
+  if(has('mirror')) return IMG.mirror;
+  if(has('frame','painting','picture','photo','art ','star map')) return IMG.frame;
+  if(has('mezuzah')) return IMG.mezuzah;
+  if(has('menorah','chanukah','butterfly','plant','waterdale','decor')) return IMG.menorah;
+  if(has('kiddush')) return IMG.kiddushcup;
+  if(has('havdalah','silver','sterling','shtender')) return IMG.havdalah;
+  if(has('candlestick')) return IMG.candlesticks;
+  if(has('candle','diffuser','reed','scent','plug-in','plugin','spa','massage','bath','body','perfume','cologne','cosmetic','robe','towel','blanket','wellness','flower','rose')) return IMG.spa;
+  if(has('sefor','torah','mishn','book','magazine','ami','mishpacha','24six','newspaper')) return IMG.books;
+  if(has('stationery','pen','journal','wallet','belt','tie','valet','suit','purse','handbag','bag','shoe','sunglass','leather')) return IMG.journal;
+  if(has('chocolate','schnapps','aperitif','wine','liquor')) return IMG.chocolate;
+  if(has('coffee','espresso','grill','meat','board','ice','kitchen','food','platter')) return IMG.serving;
+  if(has('honey','rosh')) return IMG.honeybox;
+  if(has('lego','magnet','truck','lincoln','block','etch','jack','rope','jump','sticker','prize','flashlight','tool','game','chess','puzzle')) return IMG.lego;
+  if(has('craft','sketch','draw','paint','color')) return IMG.sketch;
+  if(has('purim','costume','crown')) return IMG.costume;
+  if(has('swing','slide','pool','bike','play')) return IMG.playgym;
+  if(has('baby','pacifier','stroller','doona','elephant','carriage','swaddle','infant','toddler','under 3')) return IMG.swaddle;
+  return IMG.giftbox;
+}
+// Normalize every product: uniform review-sorted affiliate links; real themed photo for items without one.
+const REAL={"1":{"asin":"B0F26JKPMP","im":"https://m.media-amazon.com/images/I/81Z3msRB5PL._AC_SL500_.jpg"},"2":{"asin":"B082YJ864X","im":"https://m.media-amazon.com/images/I/91UVaF6YRVL._AC_SL500_.jpg"},"3":{"asin":"B000ZLBLRK","im":"https://m.media-amazon.com/images/I/91o8hmwu0pL._AC_SL500_.jpg"},"4":{"asin":"B008GOZXQS","im":"https://m.media-amazon.com/images/I/81oW7MsrWGL._AC_SL500_.jpg"},"5":{"asin":"B01CFM960A","im":"https://m.media-amazon.com/images/I/51DtMUBZDNL._AC_SL500_.jpg"},"6":{"asin":"B0CYSQWYZP","im":"https://m.media-amazon.com/images/I/71IEoj6SVpL._AC_SL500_.jpg"},"7":{"asin":"B07BPP6WB3","im":"https://m.media-amazon.com/images/I/81cOzyC1dbL._AC_SL500_.jpg"},"8":{"asin":"B09D9F795R","im":"https://m.media-amazon.com/images/I/8183XXhabxL._AC_SL500_.jpg"},"9":{"asin":"B0C4CDT8MZ","im":"https://m.media-amazon.com/images/I/71NP6ulD1FL._AC_SL500_.jpg"},"10":{"asin":"B01N5SN8W3","im":"https://m.media-amazon.com/images/I/719tmroGknL._AC_SL500_.jpg"},"11":{"asin":"B085NDS2R8","im":"https://m.media-amazon.com/images/I/71R8ntLV5SL._AC_SL500_.jpg"},"12":{"asin":"B09LWGT8VG","im":"https://m.media-amazon.com/images/I/91HQz6oqi+L._AC_SL500_.jpg"},"15":{"asin":"B076QJ1Z5Y","im":"https://m.media-amazon.com/images/I/710xhdweQ7L._AC_SL500_.jpg"},"16":{"asin":"B008ZV9QOM","im":"https://m.media-amazon.com/images/I/61lQPas9JVL._AC_SL500_.jpg"},"18":{"asin":"B0756GB78C","im":"https://m.media-amazon.com/images/I/611+2-uZUtL._AC_SL500_.jpg"},"19":{"asin":"0899061931","im":"https://m.media-amazon.com/images/I/31+AxJe4RJL._AC_SL500_.jpg"},"20":{"asin":"B004D9XYWU","im":"https://m.media-amazon.com/images/I/91+JkOrnbML._AC_SL500_.jpg"},"21":{"asin":"B07L4GXHZQ","im":"https://m.media-amazon.com/images/I/81u08OHm6RL._AC_SL500_.jpg"},"22":{"asin":"B00NHQFA1I","im":"https://m.media-amazon.com/images/I/8160QjpuoOL._AC_SL500_.jpg"},"23":{"asin":"B0F9C23TWN","im":"https://m.media-amazon.com/images/I/71eNHZsqYIL._AC_SL500_.jpg"},"25":{"asin":"B07DFDZDQZ","im":"https://m.media-amazon.com/images/I/61nHVhdkd4L._AC_SL500_.jpg"},"30":{"asin":"B079MJBV31","im":"https://m.media-amazon.com/images/I/91uZC+eis1L._AC_SL500_.jpg"},"31":{"asin":"B0BVC7SGXH","im":"https://m.media-amazon.com/images/I/41i50dXkCrL._AC_SL500_.jpg"},"32":{"asin":"B08PXMMSMM","im":"https://m.media-amazon.com/images/I/71y7MUGprhL._AC_SL500_.jpg"},"33":{"asin":"B081PCHD96","im":"https://m.media-amazon.com/images/I/81hNqTtitSL._AC_SL500_.jpg"},"34":{"asin":"B0DN1S7991","im":"https://m.media-amazon.com/images/I/71AHrGarFRL._AC_SL500_.jpg"},"35":{"asin":"B076KW3NWX","im":"https://m.media-amazon.com/images/I/81Bilk1OAVL._AC_SL500_.jpg"},"37":{"asin":"B01M20ZAAG","im":"https://m.media-amazon.com/images/I/71OsnDj7bvL._AC_SL500_.jpg"},"38":{"asin":"B083M53C1T","im":"https://m.media-amazon.com/images/I/91sowpzJG-L._AC_SL500_.jpg"},"39":{"asin":"B000P22TIY","im":"https://m.media-amazon.com/images/I/51S3W4tnDbL._AC_SL500_.jpg"},"40":{"asin":"B00LM54ZD0","im":"https://m.media-amazon.com/images/I/81Vn484uoKL._AC_SL500_.jpg"},"41":{"asin":"B07NQ3CVLN","im":"https://m.media-amazon.com/images/I/71wIuz5rpvS._AC_SL500_.jpg"},"42":{"asin":"B005KUKJOW","im":"https://m.media-amazon.com/images/I/61sUI7elx5L._AC_SL500_.jpg"},"43":{"asin":"B003KYSLMW","im":"https://m.media-amazon.com/images/I/51FSHdeinoL._AC_SL500_.jpg"},"44":{"asin":"B0BL7DCJBH","im":"https://m.media-amazon.com/images/I/71agclh8cIL._AC_SL500_.jpg"},"45":{"asin":"B00422MCVW","im":"https://m.media-amazon.com/images/I/81+xFpctPCL._AC_SL500_.jpg"},"46":{"asin":"B0927942G3","im":"https://m.media-amazon.com/images/I/61W46dGs3GS._AC_SL500_.jpg"},"47":{"asin":"B07W59H4L5","im":"https://m.media-amazon.com/images/I/61hBbrjcOyS._AC_SL500_.jpg"},"48":{"asin":"B00CW8SZE6","im":"https://m.media-amazon.com/images/I/71mjkZTd8rL._AC_SL500_.jpg"},"49":{"asin":"B07TX5HGR4","im":"https://m.media-amazon.com/images/I/81PEF8rc7ML._AC_SL500_.jpg"},"50":{"asin":"B07W6TR96W","im":"https://m.media-amazon.com/images/I/91Fex-0j2tL._AC_SL500_.jpg"},"51":{"asin":"B0CHTKNWBL","im":"https://m.media-amazon.com/images/I/71bnrYNtI6L._AC_SL500_.jpg"},"52":{"asin":"B0BYPYMNKP","im":"https://m.media-amazon.com/images/I/914n0M4xYLL._AC_SL500_.jpg"},"53":{"asin":"B0CFX4GR48","im":"https://m.media-amazon.com/images/I/81+wL7Bo9gL._AC_SL500_.jpg"},"54":{"asin":"B07HML1BT5","im":"https://m.media-amazon.com/images/I/61+3noekzxL._AC_SL500_.jpg"},"55":{"asin":"B07Y5VH28M","im":"https://m.media-amazon.com/images/I/81LKxM-5NhL._AC_SL500_.jpg"},"56":{"asin":"B0DM6JR4JB","im":"https://m.media-amazon.com/images/I/715leMSBh5L._AC_SL500_.jpg"},"57":{"asin":"B07QXKQ9B1","im":"https://m.media-amazon.com/images/I/61vdBZTeTpL._AC_SL500_.jpg"},"58":{"asin":"B0GCK51T8T","im":"https://m.media-amazon.com/images/I/61b1PbKnmmL._AC_SL500_.jpg"},"59":{"asin":"B086Z3S3MY","im":"https://m.media-amazon.com/images/I/51ggamgXBrL._AC_SL500_.jpg"},"60":{"asin":"B0CHXRCG91","im":"https://m.media-amazon.com/images/I/41mOF2No2ZL._AC_SL500_.jpg"},"61":{"asin":"B01NAIV5N8","im":"https://m.media-amazon.com/images/I/717rXP2XN2L._AC_SL500_.jpg"},"62":{"asin":"B08LP1M9N7","im":"https://m.media-amazon.com/images/I/610SU5QMDTL._AC_SL500_.jpg"},"63":{"asin":"B0F9W583J5","im":"https://m.media-amazon.com/images/I/61XB3KeWGmL._AC_SL500_.jpg"},"64":{"asin":"B08KSBG1V9","im":"https://m.media-amazon.com/images/I/61+EzNm83cL._AC_SL500_.jpg"},"65":{"asin":"B08BL27DRR","im":"https://m.media-amazon.com/images/I/61qTNBkVbfL._AC_SL500_.jpg"},"66":{"asin":"B008MH5H4M","im":"https://m.media-amazon.com/images/I/61UVGEhJkYL._AC_SL500_.jpg"},"68":{"asin":"B073X38K8L","im":"https://m.media-amazon.com/images/I/81fLiGg0L8L._AC_SL500_.jpg"},"69":{"asin":"B07SLNZ9C4","im":"https://m.media-amazon.com/images/I/61eG5psvQjL._AC_SL500_.jpg"},"70":{"asin":"B0H48CM7KK","im":"https://m.media-amazon.com/images/I/71f0kk-IuIL._AC_SL500_.jpg"},"71":{"asin":"B0C88BZG88","im":"https://m.media-amazon.com/images/I/71ZWjjKbCBL._AC_SL500_.jpg"},"72":{"asin":"B083GTS8XJ","im":"https://m.media-amazon.com/images/I/61I68+8nEwL._AC_SL500_.jpg"},"73":{"asin":"B085C2K133","im":"https://m.media-amazon.com/images/I/818lPRt08HL._AC_SL500_.jpg"},"74":{"asin":"B091FMNT7B","im":"https://m.media-amazon.com/images/I/71Wt3eKO4hL._AC_SL500_.jpg"},"75":{"asin":"B0F8TTH991","im":"https://m.media-amazon.com/images/I/91R05Ak773L._AC_SL500_.jpg"},"76":{"asin":"B00MKB5TXA","im":"https://m.media-amazon.com/images/I/71uQnSUmBFL._AC_SL500_.jpg"},"78":{"asin":"B07CLG64HS","im":"https://m.media-amazon.com/images/I/71GNgyFx4+L._AC_SL500_.jpg"},"79":{"asin":"B089R7W95T","im":"https://m.media-amazon.com/images/I/71HZP5uZRML._AC_SL500_.jpg"},"80":{"asin":"B0GMQ3G7FB","im":"https://m.media-amazon.com/images/I/71rCo8fKm6L._AC_SL500_.jpg"},"81":{"asin":"B09MJ21BG2","im":"https://m.media-amazon.com/images/I/91J1qBnnxGL._AC_SL500_.jpg"},"82":{"asin":"B07HF9TFM3","im":"https://m.media-amazon.com/images/I/71b6hGgDKvL._AC_SL500_.jpg"},"83":{"asin":"B08PF4T8W1","im":"https://m.media-amazon.com/images/I/812syWpUiLL._AC_SL500_.jpg"},"84":{"asin":"B07L2PXZK2","im":"https://m.media-amazon.com/images/I/61h2UXqV7gS._AC_SL500_.jpg"},"85":{"asin":"B00FZE1AZU","im":"https://m.media-amazon.com/images/I/81964lgXvoL._AC_SL500_.jpg"},"86":{"asin":"B0094B79PA","im":"https://m.media-amazon.com/images/I/61QkRaEAnUL._AC_SL500_.jpg"},"87":{"asin":"B0D972RLJP","im":"https://m.media-amazon.com/images/I/71FkpG19uIL._AC_SL500_.jpg"},"88":{"asin":"B0B362H859","im":"https://m.media-amazon.com/images/I/71zWumutA6L._AC_SL500_.jpg"},"89":{"asin":"B01FRGCWJI","im":"https://m.media-amazon.com/images/I/61x2dB5DTlL._AC_SL500_.jpg"},"90":{"asin":"B07VRPLDG9","im":"https://m.media-amazon.com/images/I/61NT5aO51uL._AC_SL500_.jpg"},"91":{"asin":"B0B2QQXLJR","im":"https://m.media-amazon.com/images/I/61Nag9xyusL._AC_SL500_.jpg"},"92":{"asin":"B08MKGKRQW","im":"https://m.media-amazon.com/images/I/712dVN0BRVL._AC_SL500_.jpg"},"93":{"asin":"B089QJHHMN","im":"https://m.media-amazon.com/images/I/711vnYZtWFL._AC_SL500_.jpg"},"94":{"asin":"1601591160","im":"https://m.media-amazon.com/images/I/81xk+JKVXKL._AC_SL500_.jpg"},"95":{"asin":"B0CD1K53PP","im":"https://m.media-amazon.com/images/I/81NCBB3GuOL._AC_SL500_.jpg"},"98":{"asin":"B0BKFHD3VY","im":"https://m.media-amazon.com/images/I/81qozuJkuRL._AC_SL500_.jpg"},"99":{"asin":"B0743MY4QN","im":"https://m.media-amazon.com/images/I/917k1XYzEbL._AC_SL500_.jpg"},"100":{"asin":"B01DK7QYTU","im":"https://m.media-amazon.com/images/I/71HQPwBWmYL._AC_SL500_.jpg"},"101":{"asin":"B0B7XGF6PB","im":"https://m.media-amazon.com/images/I/71WAXm5ig2L._AC_SL500_.jpg"},"102":{"asin":"B0849GZMZH","im":"https://m.media-amazon.com/images/I/71SauTehCBL._AC_SL500_.jpg"},"103":{"asin":"B00APVXSM6","im":"https://m.media-amazon.com/images/I/91PaqQw0LuL._AC_SL500_.jpg"},"104":{"asin":"B072WHQFJ7","im":"https://m.media-amazon.com/images/I/91sJrlO6eSL._AC_SL500_.jpg"},"105":{"asin":"B072QH418H","im":"https://m.media-amazon.com/images/I/71U5r7MChPL._AC_SL500_.jpg"},"106":{"asin":"B000068CKY","im":"https://m.media-amazon.com/images/I/71jVEjU17nL._AC_SL500_.jpg"},"107":{"asin":"B006RQ8UNA","im":"https://m.media-amazon.com/images/I/71aioNQTxDL._AC_SL500_.jpg"},"108":{"asin":"B00RF9J8DY","im":"https://m.media-amazon.com/images/I/81aQ8A8IRzL._AC_SL500_.jpg"},"109":{"asin":"B0016DE80I","im":"https://m.media-amazon.com/images/I/81SPb5Pks8L._AC_SL500_.jpg"},"110":{"asin":"B00LK0NAHY","im":"https://m.media-amazon.com/images/I/A1vGd5YBY7L._AC_SL500_.jpg"},"111":{"asin":"B00WADKDES","im":"https://m.media-amazon.com/images/I/71R4zNHfvnL._AC_SL500_.jpg"},"112":{"asin":"B000I9RZOW","im":"https://m.media-amazon.com/images/I/61RKLAq2k5L._AC_SL500_.jpg"},"113":{"asin":"B0B6SMWVSM","im":"https://m.media-amazon.com/images/I/61U7keIMPHL._AC_SL500_.jpg"},"114":{"asin":"B077PZGX8Y","im":"https://m.media-amazon.com/images/I/61mLyWTE9ZL._AC_SL500_.jpg"},"115":{"asin":"B0BL7G6DV6","im":"https://m.media-amazon.com/images/I/71GKsGVRLZL._AC_SL500_.jpg"},"117":{"asin":"B08NG44S54","im":"https://m.media-amazon.com/images/I/81g8fJxOH-L._AC_SL500_.jpg"},"118":{"asin":"B000GPVDLE","im":"https://m.media-amazon.com/images/I/41ECu1mlj7L._AC_SL500_.jpg"},"119":{"asin":"B0932QJ2JZ","im":"https://m.media-amazon.com/images/I/71gY9E+cTaS._AC_SL500_.jpg"},"120":{"asin":"B0G97NLRFP","im":"https://m.media-amazon.com/images/I/817VP+uQjKL._AC_SL500_.jpg"},"121":{"asin":"B0FX3VWLKD","im":"https://m.media-amazon.com/images/I/61hlhfuMSiL._AC_SL500_.jpg"},"122":{"asin":"B07MBPL3KG","im":"https://m.media-amazon.com/images/I/814gfTr5+LL._AC_SL500_.jpg"},"123":{"asin":"B0059P7JYG","im":"https://m.media-amazon.com/images/I/61A2S9RxCfL._AC_SL500_.jpg"},"124":{"asin":"B081BB6B9Y","im":"https://m.media-amazon.com/images/I/81RwbZLV2BL._AC_SL500_.jpg"},"125":{"asin":"B0D17RQN4F","im":"https://m.media-amazon.com/images/I/61V5Hp-WQ3L._AC_SL500_.jpg"},"126":{"asin":"B0D1R26BJV","im":"https://m.media-amazon.com/images/I/81U7gmO096L._AC_SL500_.jpg"}};
+P.forEach(function(p){var rr=REAL[p.id];if(rr){p.url="https://www.amazon.com/dp/"+rr.asin+"?tag=giftingbutler-20";p.img=rr.im;p.prod=true;}else{p.url=amzn(p.kw||p.title);if(!p.img)p.img=pickImg(p);}});
 
 // ══ STATE ══
 let activeCat='all',searchQ='',curProd=null;
 const S={get:(k,d)=>{try{const v=localStorage.getItem(k);return v!==null?JSON.parse(v):d}catch{return d}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
-function wk(p){const d=new Date(),y=d.getFullYear(),w=Math.ceil(((d-new Date(y,0,1))/86400000+new Date(y,0,1).getDay()+1)/7);return`${p}_${y}_w${w}`}
+function wk(p,d){d=d||new Date();const y=d.getFullYear(),w=Math.ceil(((d-new Date(y,0,1))/86400000+new Date(y,0,1).getDay()+1)/7);return`${p}_${y}_w${w}`}
 // One-time cleanup of pre-launch demo/placeholder data (Jacob/Sarah, fake giveaway entries)
 (function(){try{
   if(localStorage.getItem('gb_v')==='clean1')return;
@@ -1475,7 +1629,7 @@ function sc(id){activeCat=id;searchQ='';['search','fsb-input'].forEach(i=>{const
 // Home / logo: reset to All Gifts and scroll to the very top
 function goHome(){activeCat='all';searchQ='';['search','fsb-input'].forEach(i=>{const el=document.getElementById(i);if(el)el.value=''});renderCats();renderP();window.scrollTo({top:0,behavior:'smooth'})}
 // Mobile search button: jump to the top and focus the search box
-function mobileSearch(){const s=document.getElementById('search');if(!s)return;window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>{try{s.focus();}catch(e){}},350)}
+function mobileSearch(){openSearchOverlay();}
 
 // ══ PRODUCTS ══
 function skeletonRow(n=4){
@@ -1486,7 +1640,7 @@ function skeletonRow(n=4){
 function isSaved(p){return !!(p&&family.some(m=>m.wl.some(it=>it.u===p.url||it.t===p.title)));}
 function cardHTML(p){
   const sv=isSaved(p);
-  return`<div class="card" role="button" tabindex="0" aria-label="${p.brand} — ${p.title}, $${p.price.toFixed(2)}" onclick="openDetail(${p.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openDetail(${p.id})}"><div class="ciw"><img class="ci" src="${p.img}" alt="${p.title}" loading="lazy" onerror="this.onerror=null;this.src=PH">${p.badge?`<div class="cbadge${p.bs?' '+p.bs:''}">${p.badge}</div>`:''}<div class="cprice">$${p.price.toFixed(2)}</div><button class="chrt${sv?' sv':''}" aria-label="Save to wishlist" onclick="event.stopPropagation();toggleSave(${p.id})"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></button></div><div class="cbody"><div class="cbrand">${p.brand}</div><div class="cname">${p.title}</div></div></div>`;
+  return`<div class="card" role="button" tabindex="0" aria-label="${p.brand} — ${p.title}, $${p.price.toFixed(2)}" onclick="openDetail(${p.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openDetail(${p.id})}"><div class="ciw"><img class="ci${p.prod?' contain':''}" src="${p.img}" alt="${p.title}" loading="lazy" onerror="this.onerror=null;this.src=PH">${p.badge?`<div class="cbadge${p.bs?' '+p.bs:''}">${p.badge}</div>`:''}<div class="cprice">$${p.price.toFixed(2)}</div><button class="chrt${sv?' sv':''}" aria-label="Save to wishlist" onclick="event.stopPropagation();toggleSave(${p.id})"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></button></div><div class="cbody"><div class="cbrand">${p.brand}</div><div class="cname">${p.title}</div></div></div>`;
 }
 
 function renderP(){
@@ -1534,7 +1688,7 @@ function toggleSave(id){
 // ══ DETAIL ══
 function openDetail(id){
   const p=P.find(x=>x.id===id);if(!p)return;curProd=p;
-  document.getElementById('d-img').src=p.img;document.getElementById('d-img').alt=p.title;
+  document.getElementById('d-img').src=p.img;document.getElementById('d-img').alt=p.title;document.getElementById('d-img').className='dimg'+(p.prod?' contain':'');
   document.getElementById('d-bw').innerHTML=p.badge?`<div class="cbadge${p.bs?' '+p.bs:''}" style="position:static;display:inline-block;margin-bottom:.28rem">${p.badge}</div>`:'';
   document.getElementById('d-brand').textContent=p.brand;document.getElementById('d-title').textContent=p.title;
   document.getElementById('d-desc').textContent=p.desc;document.getElementById('d-price').textContent=`$${p.price.toFixed(2)}`;
@@ -1594,7 +1748,6 @@ const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov',
 function renderReminders(){
   const el=document.getElementById('rem-list');
   if(!reminders.length){el.innerHTML='<p class="empty">No reminders yet.</p>';return}
-  const TL={'1_month':'1 month before','2_weeks':'2 weeks before','1_week':'1 week before','3_days':'3 days before'};
   const today=new Date();
   el.innerHTML=reminders.map(r=>{
     let fmt,soon='';
@@ -1605,17 +1758,81 @@ function renderReminders(){
     if(!r.year&&next<today)next.setFullYear(thisYear+1);
     const du=Math.ceil((next-today)/86400000);
     soon=du>=0&&du<=30?`<span class="soon">In ${du}d</span>`:'';
-    return`<div class="rem-row"><div class="rem-ic">${!r.year?'🔁':'📅'}</div><div class="rem-tx"><h4>${r.ev}${soon}</h4><p>${!r.year?'Every year · ':''}${fmt} · Alert ${TL[r.time]||r.time}</p></div><button class="xb" onclick="delRem(${r.id})">✕</button></div>`;
+    return`<div class="rem-row"><div class="rem-ic">${!r.year?'🔁':'📅'}</div><div class="rem-tx"><h4>${r.ev}${soon}</h4><p>${!r.year?'Every year · ':''}${fmt} · Alert ${leadLabel(r.time)}</p></div><button class="xb" title="Edit" onclick="editRem(${r.id})">✎</button><button class="xb" title="Delete" onclick="delRem(${r.id})">✕</button></div>`;
   }).join('');
 }
-function addReminder(e){
-  e.preventDefault();const ev=document.getElementById('rem-event').value.trim(),month=parseInt(document.getElementById('rem-month').value),day=parseInt(document.getElementById('rem-day').value),year=document.getElementById('rem-year').value,time=document.getElementById('rem-time').value;
-  if(!ev||!month||!day)return;
-  const newId=reminders.length?Math.max(...reminders.map(r=>r.id))+1:1;
-  reminders.push({id:newId,ev,month,day,year:year?parseInt(year):null,time});S.set('gb_rem',reminders);
-  document.getElementById('rem-event').value='';document.getElementById('rem-year').value='';renderReminders();toast(`🔔 Reminder set for "${ev}"`);
+function leadLabel(t){
+  // Legacy/preset codes still render nicely.
+  const M={'2_months':'2 months before','1_month':'1 month before','3_weeks':'3 weeks before','2_weeks':'2 weeks before','1_week':'1 week before','3_days':'3 days before','1_day':'1 day before','same_day':'on the day'};
+  if(M[t])return M[t];
+  // New custom format: custom_<n><m|w|d>
+  let m=/^custom_(\d+)([mwd])$/.exec(t||'');
+  if(m){const n=m[1],u={m:'month',w:'week',d:'day'}[m[2]];return n==='0'?'on the day':`${n} ${u}${n==='1'?'':'s'} before`;}
+  // Legacy custom_<n> meant days.
+  m=/^custom_(\d+)$/.exec(t||'');
+  if(m)return m[1]==='0'?'on the day':`${m[1]} day${m[1]==='1'?'':'s'} before`;
+  return t;
 }
-function delRem(id){reminders=reminders.filter(r=>r.id!==id);S.set('gb_rem',reminders);renderReminders()}
+// Map any stored lead code to {preset} or {n,unit} for the custom inputs.
+function leadToInputs(t){
+  if(['1_month','1_week','3_days','same_day'].includes(t))return{preset:t};
+  const map={'2_months':[2,'m'],'1_month':[1,'m'],'3_weeks':[3,'w'],'2_weeks':[2,'w'],'1_week':[1,'w'],'3_days':[3,'d'],'1_day':[1,'d'],'same_day':[0,'d']};
+  if(map[t])return{n:map[t][0],unit:map[t][1]};
+  let m=/^custom_(\d+)([mwd])$/.exec(t||'');if(m)return{n:parseInt(m[1]),unit:m[2]};
+  m=/^custom_(\d+)$/.exec(t||'');if(m)return{n:parseInt(m[1]),unit:'d'};
+  return{preset:'1_week'};
+}
+function toggleCustomLead(){
+  const sel=document.getElementById('rem-time'),wrap=document.getElementById('rem-custom-wrap');
+  if(wrap)wrap.style.display=sel.value==='custom'?'block':'none';
+}
+function toggleYearly(){
+  const yearly=document.getElementById('rem-yearly').checked,yr=document.getElementById('rem-year'),hint=document.getElementById('rem-year-hint');
+  yr.disabled=yearly;
+  if(yearly){yr.value='';yr.placeholder='every year';if(hint)hint.textContent='n/a';}
+  else{yr.placeholder='e.g. 2027';if(hint)hint.textContent='required';}
+}
+let editingRem=null;
+function resetRemForm(){
+  document.getElementById('rem-event').value='';
+  document.getElementById('rem-yearly').checked=true;toggleYearly();
+  document.getElementById('rem-time').value='1_week';document.getElementById('rem-custom').value='';
+  toggleCustomLead();editingRem=null;
+  const b=document.getElementById('rem-save-btn');if(b)b.innerHTML='🔔 Save Reminder';
+}
+function editRem(id){
+  const r=reminders.find(x=>x.id===id);if(!r)return;
+  document.getElementById('rem-event').value=r.ev;
+  document.getElementById('rem-month').value=r.month;populateDays();
+  document.getElementById('rem-day').value=r.day;
+  document.getElementById('rem-yearly').checked=!r.year;toggleYearly();
+  if(r.year)document.getElementById('rem-year').value=r.year;
+  const inp=leadToInputs(r.time),sel=document.getElementById('rem-time');
+  if(inp.preset){sel.value=inp.preset;}
+  else{sel.value='custom';document.getElementById('rem-custom').value=inp.n;document.getElementById('rem-custom-unit').value=inp.unit;}
+  toggleCustomLead();
+  editingRem=id;
+  const b=document.getElementById('rem-save-btn');if(b)b.innerHTML='✏️ Update Reminder';
+  document.getElementById('rem-event').focus();
+}
+function addReminder(e){
+  e.preventDefault();const ev=document.getElementById('rem-event').value.trim(),month=parseInt(document.getElementById('rem-month').value),day=parseInt(document.getElementById('rem-day').value);
+  const yearly=document.getElementById('rem-yearly').checked;
+  let year=null;
+  if(!yearly){year=parseInt(document.getElementById('rem-year').value);if(isNaN(year)){toast('Enter a year (or check “Repeat every year”)');return}}
+  let time=document.getElementById('rem-time').value;
+  if(time==='custom'){const cn=parseInt(document.getElementById('rem-custom').value),cu=document.getElementById('rem-custom-unit').value;if(isNaN(cn)||cn<0){toast('Enter a number of months/weeks/days');return}time='custom_'+cn+cu;}
+  if(!ev||!month||!day)return;
+  if(editingRem!=null){
+    const r=reminders.find(x=>x.id===editingRem);
+    if(r){r.ev=ev;r.month=month;r.day=day;r.year=year;r.time=time;}
+    S.set('gb_rem',reminders);resetRemForm();renderReminders();toast(`✏️ Reminder updated`);return;
+  }
+  const newId=reminders.length?Math.max(...reminders.map(r=>r.id))+1:1;
+  reminders.push({id:newId,ev,month,day,year,time});S.set('gb_rem',reminders);
+  resetRemForm();renderReminders();toast(`🔔 Reminder set for "${ev}"`);
+}
+function delRem(id){reminders=reminders.filter(r=>r.id!==id);S.set('gb_rem',reminders);if(editingRem===id)resetRemForm();renderReminders()}
 function populateDays(){
   const m=parseInt(document.getElementById('rem-month').value)||1;
   const days=[31,29,31,30,31,30,31,31,30,31,30,31][m-1];
@@ -1637,7 +1854,7 @@ function submitGW(){
 }
 
 // ══ SEARCH OVERLAY ══
-function openSearchOverlay(){return;
+function openSearchOverlay(){
   document.getElementById('search-overlay').classList.add('open');
   document.body.style.overflow='hidden';
   setTimeout(()=>document.getElementById('ov-search').focus(),120);
@@ -1736,8 +1953,11 @@ document.getElementById('rem-month').addEventListener('change',populateDays);
   const gwMeta=()=>db.collection('giveaway_meta').doc(wk('gw'));
   const gwEntry=email=>db.collection('giveaway_entries').doc(wk('gw')+'_'+email.replace(/[^a-z0-9]/gi,'_'));
   function refreshGWCount(){
-    gwMeta().get().then(function(snap){
-      const n=(snap.exists&&snap.data().count)||0;
+    // Read the count from the public meta doc only. Entries are NOT client-
+    // readable (keeps entrant emails private); the Cloud Function maintains
+    // this counter via the Admin SDK on each new entry.
+    gwMeta().get().then(function(doc){
+      const n=(doc.exists && doc.data().count) || 0;
       const lbl=document.getElementById('ec-num'); if(!lbl)return;
       const pr=calcPrize(n);
       lbl.textContent=n.toLocaleString();
@@ -1746,23 +1966,30 @@ document.getElementById('rem-month').addEventListener('change',populateDays);
       document.querySelectorAll('.tier').forEach((el,i)=>el.classList.toggle('lit',i<=pr.t));
     }).catch(e=>console.warn('[gb] gw count',e));
   }
-  // Count an email exactly once — atomic, so it's safe to call repeatedly or
-  // from multiple devices, and it back-fills entries made before this existed.
+  // Record an entry. The doc ID is deterministic (week_email), so a repeat
+  // entry is a write to an existing doc — blocked by rules and ignored. The
+  // first (create) write is what fires the Cloud Function, which both emails
+  // the entrant and increments the public counter exactly once.
   function ensureCounted(email){
     if(!email||email.indexOf('@')<0) return Promise.resolve();
-    return db.runTransaction(function(tx){
-      const ref=gwEntry(email);
-      return tx.get(ref).then(function(doc){
-        if(doc.exists) return;
-        tx.set(ref,{email:email,week:wk('gw'),uid:uid||null,ts:Date.now()});
-        tx.set(gwMeta(),{count:firebase.firestore.FieldValue.increment(1),week:wk('gw')},{merge:true});
-      });
-    }).catch(function(e){console.warn('[gb] ensureCounted',e);});
+    return gwEntry(email).set({email:email,week:wk('gw'),uid:uid||null,ts:Date.now()})
+      .catch(function(e){/* already entered (update denied) — expected */});
+  }
+  // Show last week's winner (masked) from the public meta doc, if drawn.
+  function loadLastWinner(){
+    const el=document.getElementById('gw-winner');if(!el)return;
+    const lastWk=wk.call(null,'gw',new Date(Date.now()-7*86400000));
+    db.collection('giveaway_meta').doc(lastWk).get().then(function(doc){
+      const w=doc.exists&&doc.data().winnerMasked;
+      if(w){document.getElementById('gw-winner-email').textContent=w;el.style.display='block';}
+      else{el.style.display='none';}
+    }).catch(function(){el.style.display='none';});
   }
   const _origUpdateGW=window.updateGW;
   window.updateGW=function(){
     _origUpdateGW();
     refreshGWCount();
+    loadLastWinner();
     const mine=(typeof getEM==='function'&&getEM())||'';
     if(mine) ensureCounted(mine).then(refreshGWCount);
   };
