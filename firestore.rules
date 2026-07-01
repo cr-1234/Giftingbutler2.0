@@ -1,0 +1,59 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: is the requester the admin?
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == 'ebayrocks2017@gmail.com';
+    }
+
+    // ── Per-user private data: wishlists & reminders. Owner only. ──
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // ── Public weekly counter. Anyone reads; Cloud Function writes. ──
+    match /giveaway_meta/{week} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ── Giveaway entries. Public create; admin reads all. ──
+    match /giveaway_entries/{entryId} {
+      allow read: if isAdmin();
+      allow create: if request.resource.data.email is string
+                    && request.resource.data.email.size() > 3
+                    && request.resource.data.email.size() < 320
+                    && request.resource.data.week is string;
+      allow update, delete: if isAdmin();
+    }
+
+    // ── Giveaway winners. Admin only. ──
+    match /giveaway_winners/{week} {
+      allow read, write: if isAdmin();
+    }
+
+    // ── Product overrides. Admin writes; public reads. ──
+    match /product_overrides/{productId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ── Site settings. Admin writes; public reads. ──
+    match /site_settings/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ── Custom products added via admin. Admin writes; public reads. ──
+    match /custom_products/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ── Everything else denied. ──
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

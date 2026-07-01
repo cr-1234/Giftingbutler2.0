@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GiftingButler Admin</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--plum:#5B2D8E;--plum-md:#7C3AED;--plum-lt:#EDE5F8;--ink:#1a1a2e;--muted:#6b7280;--brd:#e5e7eb;--bg:#f9f8ff;--white:#fff;--r:10px;--green:#10b981;--red:#ef4444;--amber:#f59e0b}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+
+/* ── Login ── */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem;background:linear-gradient(135deg,#f0ebff,#fce7f3)}
+.login-card{background:var(--white);border-radius:20px;padding:2.5rem;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(91,45,142,.15)}
+.login-logo{text-align:center;margin-bottom:1.5rem}
+.login-logo svg{height:60px;width:auto}
+.login-card h1{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:.3rem;color:var(--plum)}
+.login-card p{text-align:center;color:var(--muted);font-size:.85rem;margin-bottom:1.8rem}
+.fld-wrap{margin-bottom:1rem}
+.fld-wrap label{display:block;font-size:.8rem;font-weight:600;color:var(--ink);margin-bottom:.35rem}
+.fld-wrap input{width:100%;padding:.72rem 1rem;border:1.5px solid var(--brd);border-radius:var(--r);font-size:.9rem;outline:none;transition:border .2s}
+.fld-wrap input:focus{border-color:var(--plum);box-shadow:0 0 0 3px var(--plum-lt)}
+.btn-primary{width:100%;padding:.8rem;background:var(--plum);color:#fff;border:none;border-radius:var(--r);font-size:.95rem;font-weight:700;cursor:pointer;transition:background .2s;margin-top:.5rem}
+.btn-primary:hover{background:var(--plum-md)}
+.btn-primary:disabled{opacity:.6;cursor:not-allowed}
+#login-err{color:var(--red);font-size:.82rem;text-align:center;margin-top:.75rem;min-height:1.2em}
+.login-note{background:var(--plum-lt);border-radius:8px;padding:.9rem 1rem;margin-top:1.2rem;font-size:.78rem;color:var(--plum);line-height:1.6}
+
+/* ── Dashboard shell ── */
+#dashboard{display:none;min-height:100vh}
+.dash-header{background:var(--white);border-bottom:1px solid var(--brd);display:flex;align-items:center;padding:0 1.5rem;height:56px;position:sticky;top:0;z-index:100;gap:1rem;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.dash-header .dlogo{height:38px;width:auto}
+.dash-header h2{font-size:1rem;font-weight:700;color:var(--plum);flex:1}
+.dash-user{font-size:.8rem;color:var(--muted)}
+.btn-sm{padding:.42rem .9rem;border-radius:50px;font-size:.8rem;font-weight:600;cursor:pointer;border:none;transition:all .18s}
+.btn-outline{background:transparent;border:1.5px solid var(--brd);color:var(--ink)}
+.btn-outline:hover{border-color:var(--plum);color:var(--plum)}
+.btn-danger{background:var(--red);color:#fff}
+.btn-danger:hover{background:#dc2626}
+.btn-green{background:var(--green);color:#fff}
+.btn-save{background:var(--plum);color:#fff;padding:.5rem 1.4rem}
+.btn-save:hover{background:var(--plum-md)}
+
+.dash-body{display:flex;min-height:calc(100vh - 56px)}
+
+/* sidebar */
+.sidebar{width:200px;flex-shrink:0;background:var(--white);border-right:1px solid var(--brd);padding:1rem 0;display:flex;flex-direction:column}
+.nav-item{display:flex;align-items:center;gap:.6rem;padding:.7rem 1.2rem;font-size:.88rem;font-weight:500;color:var(--muted);cursor:pointer;border-left:3px solid transparent;transition:all .15s;background:none;border-right:none;border-top:none;border-bottom:none;width:100%;text-align:left}
+.nav-item:hover{background:var(--plum-lt);color:var(--plum)}
+.nav-item.active{background:var(--plum-lt);color:var(--plum);border-left-color:var(--plum);font-weight:700}
+.nav-icon{font-size:1.1rem;width:20px;text-align:center}
+.sidebar-foot{margin-top:auto;padding:1rem}
+
+/* content */
+.content{flex:1;padding:1.5rem;overflow-y:auto}
+.panel{display:none}
+.panel.active{display:block}
+.panel-head{display:flex;align-items:center;gap:1rem;margin-bottom:1.4rem;flex-wrap:wrap}
+.panel-head h1{font-size:1.3rem;font-weight:800;color:var(--ink);flex:1}
+.badge-count{background:var(--plum-lt);color:var(--plum);font-size:.75rem;font-weight:700;padding:.2rem .6rem;border-radius:50px}
+
+/* search & filters */
+.filters{display:flex;gap:.7rem;align-items:center;flex-wrap:wrap;margin-bottom:1.2rem}
+.filters input,.filters select{padding:.5rem .8rem;border:1.5px solid var(--brd);border-radius:8px;font-size:.85rem;outline:none;background:var(--white)}
+.filters input:focus,.filters select:focus{border-color:var(--plum)}
+.filters input[type=search]{flex:1;min-width:200px}
+
+/* stats row */
+.stats-row{display:flex;gap:1rem;margin-bottom:1.4rem;flex-wrap:wrap}
+.stat-card{background:var(--white);border:1px solid var(--brd);border-radius:var(--r);padding:1rem 1.4rem;flex:1;min-width:130px}
+.stat-card .sv{font-size:1.6rem;font-weight:800;color:var(--plum)}
+.stat-card .sl{font-size:.78rem;color:var(--muted);margin-top:.2rem}
+
+/* product table */
+.prod-table{width:100%;border-collapse:collapse;background:var(--white);border-radius:var(--r);overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.prod-table th{background:#f5f3ff;text-align:left;padding:.65rem .9rem;font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--brd)}
+.prod-table td{padding:.6rem .9rem;font-size:.85rem;border-bottom:1px solid #f3f4f6;vertical-align:middle}
+.prod-table tr:last-child td{border-bottom:none}
+.prod-table tr:hover td{background:#faf9ff}
+.prod-img{width:40px;height:40px;object-fit:contain;border-radius:6px;background:#f5f3ff;padding:3px}
+.spons-toggle{display:inline-flex;align-items:center;gap:.4rem;cursor:pointer}
+.toggle-track{width:36px;height:20px;border-radius:50px;background:#e5e7eb;position:relative;transition:background .2s}
+.toggle-track.on{background:var(--plum)}
+.toggle-thumb{position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle-track.on .toggle-thumb{transform:translateX(16px)}
+.chip{display:inline-block;padding:2px 8px;border-radius:50px;font-size:.72rem;font-weight:700}
+.chip-purple{background:linear-gradient(135deg,var(--plum),var(--plum-md));color:#fff}
+.chip-gray{background:#e5e7eb;color:var(--muted)}
+.chip-green{background:#d1fae5;color:#065f46}
+.chip-red{background:#fee2e2;color:#991b1b}
+.badge-inp{border:1px solid var(--brd);border-radius:6px;padding:3px 7px;font-size:.78rem;width:90px;outline:none}
+.badge-inp:focus{border-color:var(--plum)}
+
+/* modal */
+#edit-modal{position:fixed;inset:0;z-index:500;display:none;align-items:center;justify-content:center;padding:1rem;background:rgba(0,0,0,.45);backdrop-filter:blur(4px)}
+#edit-modal.open{display:flex}
+.modal-card{background:var(--white);border-radius:16px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;padding:1.8rem;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-card h2{font-size:1.1rem;font-weight:800;margin-bottom:1.4rem}
+.mfld{margin-bottom:1rem}
+.mfld label{display:block;font-size:.8rem;font-weight:600;margin-bottom:.3rem;color:var(--muted)}
+.mfld input,.mfld select,.mfld textarea{width:100%;padding:.6rem .85rem;border:1.5px solid var(--brd);border-radius:8px;font-size:.88rem;outline:none}
+.mfld input:focus,.mfld select:focus{border-color:var(--plum)}
+.mfld textarea{min-height:60px;resize:vertical}
+.modal-foot{display:flex;gap:.7rem;justify-content:flex-end;margin-top:1.4rem}
+.modal-preview{width:70px;height:70px;object-fit:contain;border-radius:8px;background:#f5f3ff;padding:4px;border:1px solid var(--brd);margin-bottom:.5rem}
+
+/* giveaway */
+.gw-toggle{display:flex;align-items:center;gap:1rem;background:var(--white);border:1px solid var(--brd);border-radius:var(--r);padding:1rem 1.4rem;margin-bottom:1rem}
+.gw-toggle label{font-weight:600;flex:1}
+.toggle-big{width:48px;height:26px;border-radius:50px;background:#e5e7eb;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.toggle-big.on{background:var(--green)}
+.toggle-big .tb{position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.toggle-big.on .tb{transform:translateX(22px)}
+.entries-table{width:100%;border-collapse:collapse;background:var(--white);border-radius:var(--r);overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06);margin-top:1rem}
+.entries-table th{background:#f5f3ff;text-align:left;padding:.6rem .9rem;font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;border-bottom:1px solid var(--brd)}
+.entries-table td{padding:.55rem .9rem;font-size:.83rem;border-bottom:1px solid #f3f4f6}
+.entries-table tr:last-child td{border-bottom:none}
+
+/* settings */
+.settings-group{background:var(--white);border:1px solid var(--brd);border-radius:var(--r);padding:1.4rem;margin-bottom:1rem}
+.settings-group h3{font-size:.95rem;font-weight:700;margin-bottom:1rem;padding-bottom:.7rem;border-bottom:1px solid var(--brd);color:var(--ink)}
+.sf{margin-bottom:.9rem}
+.sf label{display:block;font-size:.8rem;font-weight:600;color:var(--muted);margin-bottom:.3rem}
+.sf input,.sf select,.sf textarea{width:100%;padding:.6rem .85rem;border:1.5px solid var(--brd);border-radius:8px;font-size:.88rem;outline:none}
+.sf input:focus,.sf select:focus{border-color:var(--plum)}
+.toast-adm{position:fixed;bottom:1.5rem;right:1.5rem;background:#1a1a2e;color:#fff;padding:.7rem 1.2rem;border-radius:10px;font-size:.85rem;font-weight:600;opacity:0;transform:translateY(10px);transition:all .3s;z-index:1000}
+.toast-adm.show{opacity:1;transform:translateY(0)}
+
+@media(max-width:640px){
+  .sidebar{width:60px}
+  .nav-item span{display:none}
+  .nav-item{justify-content:center;padding:.7rem}
+  .dash-header h2{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN ── -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <text x="32" y="54" font-family="'Palatino Linotype','Book Antiqua',Palatino,Georgia,serif" font-size="62" font-style="italic" font-weight="400" fill="#5B2D8E" text-anchor="middle">G</text>
+      </svg>
+    </div>
+    <h1>GiftingButler Admin</h1>
+    <p>Sign in to manage your store</p>
+    <div class="fld-wrap">
+      <label>Email</label>
+      <input type="email" id="adm-email" placeholder="admin@example.com" autocomplete="email">
+    </div>
+    <div class="fld-wrap">
+      <label>Password</label>
+      <input type="password" id="adm-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn-primary" id="login-btn" onclick="doLogin()">Sign In</button>
+    <div id="login-err"></div>
+    <div class="login-note">
+      <strong>First time?</strong> Go to Firebase Console → Authentication → Sign-in method → enable <em>Email/Password</em>, then click <em>Add user</em> and enter your email &amp; password.
+    </div>
+  </div>
+</div>
+
+<!-- ── DASHBOARD ── -->
+<div id="dashboard">
+  <div class="dash-header">
+    <svg class="dlogo" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <text x="32" y="54" font-family="'Palatino Linotype','Book Antiqua',Palatino,Georgia,serif" font-size="62" font-style="italic" fill="#5B2D8E" text-anchor="middle">G</text>
+    </svg>
+    <h2>GiftingButler Admin</h2>
+    <span class="dash-user" id="dash-email"></span>
+    <a href="/" target="_blank" class="btn-sm btn-outline">View Site</a>
+    <button class="btn-sm btn-danger" onclick="doLogout()">Sign Out</button>
+  </div>
+
+  <div class="dash-body">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <button class="nav-item active" onclick="openTab('products',this)">
+        <span class="nav-icon">🛍️</span><span>Products</span>
+      </button>
+      <button class="nav-item" onclick="openTab('giveaway',this)">
+        <span class="nav-icon">🎁</span><span>Giveaway</span>
+      </button>
+      <button class="nav-item" onclick="openTab('settings',this)">
+        <span class="nav-icon">⚙️</span><span>Settings</span>
+      </button>
+      <div class="sidebar-foot">
+        <button class="btn-sm btn-outline" style="width:100%" onclick="window.open('https://console.firebase.google.com/project/giftingbutler-74395','_blank')">Firebase</button>
+      </div>
+    </aside>
+
+    <!-- Content -->
+    <main class="content">
+
+      <!-- ── PRODUCTS TAB ── -->
+      <div id="tab-products" class="panel active">
+        <div class="panel-head">
+          <h1>Products</h1>
+          <span class="badge-count" id="prod-count-badge">126</span>
+          <button class="btn-sm btn-green" onclick="openAddModal()" style="margin-right:.4rem">+ Add Product</button>
+          <button class="btn-sm btn-save" onclick="saveAllOverrides()">Save Changes</button>
+        </div>
+        <div class="stats-row" id="prod-stats"></div>
+        <div class="filters">
+          <input type="search" id="prod-search" placeholder="Search products…" oninput="renderProdTable()">
+          <div id="cat-filter-wrap" style="display:flex;flex-wrap:wrap;gap:.35rem;align-items:center"></div>
+          <select id="spons-filter" onchange="renderProdTable()">
+            <option value="">All</option>
+            <option value="spons">Sponsored only</option>
+            <option value="active">Active only</option>
+            <option value="inactive">Hidden only</option>
+          </select>
+        </div>
+        <!-- Bulk action bar -->
+        <div id="bulk-bar" style="display:none;align-items:center;gap:.75rem;background:#f5f0ff;border:1px solid #c4b5fd;border-radius:10px;padding:.6rem 1rem;margin-bottom:.75rem;flex-wrap:wrap">
+          <span id="bulk-count" style="font-size:.85rem;font-weight:700;color:#5B2D8E"></span>
+          <button onclick="bulkTziut()" style="padding:.35rem .9rem;background:#5B2D8E;color:#fff;border:none;border-radius:7px;font-size:.82rem;font-weight:600;cursor:pointer">⚠️ Set Tziut</button>
+          <button onclick="bulkDelete()" style="padding:.35rem .9rem;background:#dc2626;color:#fff;border:none;border-radius:7px;font-size:.82rem;font-weight:600;cursor:pointer">🗑 Delete Selected</button>
+          <button onclick="clearSelection()" style="padding:.35rem .9rem;background:transparent;color:#5B2D8E;border:1px solid #c4b5fd;border-radius:7px;font-size:.82rem;cursor:pointer">✕ Clear</button>
+        </div>
+
+        <table class="prod-table">
+          <thead>
+            <tr>
+              <th style="width:32px"><input type="checkbox" id="chk-all" onchange="toggleSelectAll(this.checked)" style="accent-color:#5B2D8E;width:15px;height:15px;cursor:pointer"></th>
+              <th></th>
+              <th>Product</th>
+              <th onclick="toggleSort('active')" style="cursor:pointer;user-select:none" id="th-active">Visible ↕</th>
+              <th onclick="toggleSort('spons')" style="cursor:pointer;user-select:none" id="th-spons">Sponsored ↕</th>
+              <th>Carousel</th>
+              <th onclick="toggleSort('store')" style="cursor:pointer;user-select:none" id="th-store">Sold At ↕</th>
+              <th onclick="toggleSort('price')" style="cursor:pointer;user-select:none" id="th-price">Price ↕</th>
+            </tr>
+          </thead>
+          <tbody id="prod-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- ── GIVEAWAY TAB ── -->
+      <div id="tab-giveaway" class="panel">
+        <div class="panel-head">
+          <h1>Giveaway</h1>
+          <button class="btn-sm btn-save" onclick="saveGiveawaySettings()">Save Settings</button>
+        </div>
+        <div class="stats-row">
+          <div class="stat-card"><div class="sv" id="gw-count">—</div><div class="sl">Total entries</div></div>
+          <div class="stat-card"><div class="sv" id="gw-week">—</div><div class="sl">Current week</div></div>
+          <div class="stat-card"><div class="sv" id="gw-winner">—</div><div class="sl">Last winner</div></div>
+        </div>
+
+        <div class="gw-toggle">
+          <label>Giveaway Active</label>
+          <div class="toggle-big" id="gw-active-toggle" onclick="toggleGiveawayActive()">
+            <div class="tb"></div>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h3>Prize & Description</h3>
+          <p style="font-size:.78rem;color:var(--muted);margin-bottom:.8rem">The prize <em>amount</em> on the site scales automatically with entry count ($5 → $100). Set the <strong>prize type</strong> below (what they win) and the <strong>fine print</strong> rules.</p>
+          <div class="sf"><label>Prize Type (shown in the giveaway modal)</label><input type="text" id="gw-prize-desc" value="Amazon Gift Card" placeholder="Amazon Gift Card"></div>
+          <div class="sf"><label>Fine Print / Rules (shown in the giveaway modal)</label><textarea id="gw-fine-print" rows="4">1 entry per week · Winner announced every Sunday · By entering you agree to receive one confirmation email from us which may include a special offer. We never send unsolicited emails.</textarea></div>
+        </div>
+
+        <div class="settings-group" style="display:flex;gap:.7rem;align-items:center;flex-wrap:wrap">
+          <h3 style="flex:1;border:none;padding:0;margin:0">Entries</h3>
+          <button class="btn-sm btn-outline" onclick="exportEntriesCSV()">⬇ Export CSV</button>
+          <button class="btn-sm btn-green" onclick="pickWinner()">🏆 Pick Random Winner</button>
+        </div>
+        <div id="gw-entries-wrap" style="margin-top:.8rem">
+          <p style="color:var(--muted);font-size:.85rem">Loading entries…</p>
+        </div>
+      </div>
+
+      <!-- ── SETTINGS TAB ── -->
+      <div id="tab-settings" class="panel">
+        <div class="panel-head">
+          <h1>Site Settings</h1>
+          <button class="btn-sm btn-save" onclick="saveSettings()">Save Settings</button>
+        </div>
+
+        <div class="settings-group">
+          <h3>Contact & Identity</h3>
+          <div class="sf"><label>Contact Email</label><input type="email" id="s-email" value="giftingbutler.help@gmail.com"></div>
+          <div class="sf"><label>Site Tagline</label><input type="text" id="s-tagline" value="Your personal gift concierge — curated picks, smart reminders, and family registries for every occasion."></div>
+        </div>
+
+        <div class="settings-group">
+          <h3>Social Links</h3>
+          <div class="sf"><label>X (Twitter) URL</label><input type="url" id="s-twitter" placeholder="https://x.com/yourhandle"></div>
+          <div class="sf"><label>TikTok URL</label><input type="url" id="s-tiktok" placeholder="https://tiktok.com/@yourhandle"></div>
+          <div class="sf"><label>YouTube URL</label><input type="url" id="s-youtube" placeholder="https://youtube.com/@yourchannel"></div>
+        </div>
+
+        <div class="settings-group">
+          <h3>Announcement Banner</h3>
+          <div class="sf"><label>Banner Text (leave blank to hide)</label><input type="text" id="s-banner" placeholder="🎉 Free gift wrapping this week only!"></div>
+          <div class="sf"><label>Banner Color</label>
+            <select id="s-banner-color">
+              <option value="purple">Purple</option>
+              <option value="green">Green</option>
+              <option value="amber">Amber</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h3>Sponsored Product IDs</h3>
+          <div class="sf"><label>Comma-separated product IDs to show as Sponsored</label><input type="text" id="s-spons-ids" placeholder="52,57,49,87,85,102,58,50,125,126,83,48"></div>
+          <p style="font-size:.78rem;color:var(--muted);margin-top:.3rem">These products get the purple Sponsored badge and appear first in the carousel and category grids.</p>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ── EDIT MODAL ── -->
+<div id="edit-modal">
+  <div class="modal-card">
+    <h2 id="modal-title">Edit Product</h2>
+    <input type="hidden" id="modal-id">
+    <img id="modal-preview" class="modal-preview" src="" alt="preview">
+    <div class="mfld"><label>Image URL (photo)</label><input type="url" id="modal-img" oninput="document.getElementById('modal-preview').src=this.value"></div>
+    <div class="mfld"><label>Video URL <span style="font-weight:400;font-size:.72rem;color:var(--muted)">(optional — YouTube, mp4, etc.)</span></label><input type="url" id="modal-video" placeholder="https://www.youtube.com/embed/..."></div>
+    <div class="mfld"><label>Product Title</label><input type="text" id="modal-title-inp"></div>
+    <div class="mfld"><label>Sold At (store name, e.g. Amazon)</label><input type="text" id="modal-store" placeholder="Amazon"></div>
+    <div class="mfld"><label>Brand / Company (optional)</label><input type="text" id="modal-brand"></div>
+    <div class="mfld"><label>Description</label><textarea id="modal-desc" rows="3" placeholder="Short product description shown on the site…"></textarea></div>
+    <div class="mfld"><label>Price ($)</label><input type="number" id="modal-price" step="0.01" min="0"></div>
+    <div class="mfld"><label>Badge (short label, e.g. "Bestseller")</label><input type="text" id="modal-badge" placeholder="Bestseller"></div>
+    <div class="mfld"><label>Shop URL</label><input type="url" id="modal-url"></div>
+    <div class="mfld"><label>Categories <span style="font-weight:400;font-size:.72rem;color:var(--muted)">(tap to toggle)</span></label>
+      <div id="modal-cats-wrap" style="display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.4rem"></div>
+    </div>
+    <div class="mfld" style="margin-top:.6rem;padding:.7rem 1rem;background:#fff5f5;border:1px solid #fca5a5;border-radius:8px">
+      <label style="display:flex;align-items:flex-start;gap:.6rem;cursor:pointer;font-weight:600;color:#b91c1c">
+        <input type="checkbox" id="modal-tziut" style="margin-top:2px;accent-color:#ef4444;width:16px;height:16px;flex-shrink:0">
+        <span>⚠️ Tzniut Warning — show a notice on this card that the image may not meet tzniut standards</span>
+      </label>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-sm btn-danger" onclick="deleteProductPermanently()" title="Permanently removes from site (stored in Firestore)">🗑 Delete</button>
+      <button class="btn-sm btn-outline" style="color:var(--amber);border-color:var(--amber)" onclick="hideProduct()" title="Hide from site — can be unhidden later">Hide</button>
+      <button class="btn-sm btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn-sm btn-save" onclick="saveModal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="adm-toast" class="toast-adm"></div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+// ── Firebase init ──
+firebase.initializeApp({
+  apiKey:"AIzaSyBPvwf-ilWhc5G_jAEaRDwlom0jJY678w4",
+  authDomain:"giftingbutler-74395.firebaseapp.com",
+  projectId:"giftingbutler-74395",
+  storageBucket:"giftingbutler-74395.firebasestorage.app",
+  messagingSenderId:"37308175610",
+  appId:"1:37308175610:web:547281f014be448b292543"
+});
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+// ── Product catalog (synced from index.html P[]) ──
+const PRODUCTS = [
+  {id:1,title:"Aesthetic Wave Mirror",brand:"LumiDeco",price:38,cats:["decor","her","bat-mitzvah","housewarming","birthday"],img:"https://images.unsplash.com/photo-1618220179428-22790b461013?w=1000&auto=format&fit=crop&crop=entropy&q=85",desc:"Retro-inspired wavy vanity mirror that adds instant visual texture to any modern room.",url:"https://www.amazon.com/s?k=Aesthetic%20Wave%20Mirror&tag=giftingbutler-20",badge:"Trending"},
+  {id:2,title:"Organic Muslin Swaddle & Teether",brand:"LoomyBaby",price:34.99,cats:["baby","children-u3","grandchildren"],img:"https://images.unsplash.com/photo-1586015555751-63bb77f4322a?w=1000&auto=format&fit=crop&crop=entropy&q=85",desc:"Premium organic muslin swaddles paired with a maple wood teething ring.",url:"https://www.amazon.com/s?k=Organic%20Muslin%20Swaddle%20Teether&tag=giftingbutler-20",badge:"Organic"},
+  {id:3,title:"Kiddush Cup with Leather Wrap",brand:"JudaicArt",price:120,cats:["bar-mitzvah","lchaim-vort","wedding"],img:"https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=1000&auto=format&fit=crop&crop=entropy&q=85",desc:"Modern silver kiddush cup with a handcrafted leather sleeve.",url:"https://www.amazon.com/s?k=Kiddush%20Cup%20with%20Leather%20Wrap&tag=giftingbutler-20",badge:"Premium"},
+  {id:4,title:"Upsherin Honey Cake Gift Set",brand:"TraditionBox",price:45,cats:["upsherin","children-u3","grandchildren"],img:"https://images.unsplash.com/photo-1513201099705-a9746e1e201f?w=1000&auto=format&fit=crop&crop=entropy&q=85",desc:"Traditional honey biscuits and keepsakes for a toddler's Upsherin ceremony.",url:"https://www.amazon.com/s?k=Upsherin%20Honey%20Cake%20Gift%20Set&tag=giftingbutler-20",badge:"Specialty"},
+  {id:5,title:"Hand-Blown Glass Mezuzah Case",brand:"StudioGlass",price:55,cats:["housewarming","wedding","lchaim-vort","rosh-hashana"],img:"https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=1000&auto=format&fit=crop&crop=entropy&q=85",desc:"Color-infused hand-blown Mezuzah casing, each piece uniquely crafted.",url:"https://www.amazon.com/s?k=Hand-Blown%20Glass%20Mezuzah%20Case&tag=giftingbutler-20",badge:"Artisan"},
+  {id:6,title:"Retro Mechanical Keyboard",brand:"ClickyVibe",price:89,cats:["tech","him","bar-mitzvah","birthday","children-9-12"],img:"https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=1000&auto=format&fit=crop&crop=entropy&q=85",desc:"Typewriter-style keyboard with tactile switches and ambient backlighting.",url:"https://www.amazon.com/s?k=Retro%20Mechanical%20Keyboard&tag=giftingbutler-20",badge:"Bestseller"},
+  {id:7,title:"Sterling Silver Challah Board",brand:"SterlingCrown",price:210,cats:["wedding","housewarming","anniversary"],img:"https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?w=1000&auto=format&fit=crop&crop=entropy&q=85",desc:"Heavy marble challah board with sterling silver borders. A traditional heirloom.",url:"https://www.amazon.com/s?k=Sterling%20Silver%20Challah%20Board&tag=giftingbutler-20",badge:"Heirloom"},
+  {id:8,title:"Sunset Projection Lamp",brand:"SolGlow",price:29,cats:["tech","decor","her","children-9-12","birthday"],img:"https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?w=1000&auto=format&fit=crop&crop=entropy&q=85",desc:"Bathe any room in warm golden sunset hues.",url:"https://www.amazon.com/s?k=Sunset%20Projection%20Lamp&tag=giftingbutler-20",badge:"Cozy Pick"},
+  {id:9,title:"Organic Birch Play Gym",brand:"HabaKids",price:64.95,cats:["children-u3","grandchildren","baby"],img:"https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=1000&auto=format&fit=crop&crop=entropy&q=85",desc:"Beautifully designed birch wood activity gym with sensory toys.",url:"https://www.amazon.com/s?k=Organic%20Birch%20Play%20Gym&tag=giftingbutler-20",badge:"Pure Wood"},
+  {id:10,title:"STEM Coding Robot Toy",brand:"RoboEdu",price:79.99,cats:["children-4-8","grandchildren","bar-mitzvah","bat-mitzvah"],img:"https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1000&auto=format&fit=crop&crop=entropy&q=85",desc:"Introduce kids to coding logic with this programmable robot.",url:"https://www.amazon.com/s?k=STEM%20Coding%20Robot%20Toy&tag=giftingbutler-20",badge:"STEM"},
+  {id:11,title:"Digital Art Sketching Tablet",brand:"ArtJoy",price:45,cats:["children-9-12","grandchildren","her","bat-mitzvah","birthday"],img:"https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=1000&auto=format&fit=crop&crop=entropy&q=85",desc:"High-precision drawing tablet with styling pen and lessons handbook.",url:"https://www.amazon.com/s?k=Digital%20Art%20Sketching%20Tablet&tag=giftingbutler-20",badge:"Creative"},
+  {id:12,title:"Sterling Silver Havdalah Set",brand:"JudaicArt",price:180,cats:["wedding","bar-mitzvah","bat-mitzvah","anniversary"],img:"https://images.unsplash.com/photo-1617791160536-598cf32026fb?w=1000&auto=format&fit=crop&crop=entropy&q=85",desc:"Sculpted sterling silver Havdalah set. Museum quality.",url:"https://www.amazon.com/s?k=Sterling%20Silver%20Havdalah%20Set&tag=giftingbutler-20",badge:"Traditional"},
+  {id:13,title:"Honey & Apple Rosh Hashana Box",brand:"TasteOfTorah",price:42,cats:["rosh-hashana","food","housewarming"],img:"https://images.unsplash.com/photo-1568624586078-baf1f9d7dc17?w=1000&auto=format&fit=crop&crop=entropy&q=85",desc:"Artisanal honey varietals, dried apple chips, and a handwritten blessing card.",url:"https://www.amazon.com/s?k=Honey%20Apple%20Rosh%20Hashana%20Box&tag=giftingbutler-20",badge:"Seasonal"},
+  {id:14,title:"Luxury Spa & Candle Gift Box",brand:"BloomWell",price:75,cats:["wellness","her","anniversary","birthday","bat-mitzvah","teacher"],img:"https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=1000&auto=format&fit=crop&crop=entropy&q=85",desc:"Indulgent bath salts, botanical lotions, and hand-poured candles.",url:"https://www.amazon.com/s?k=Luxury%20Spa%20Candle%20Gift%20Box&tag=giftingbutler-20",badge:"Self-Care"},
+  {id:15,title:"Sculptural Brass Chanukah Menorah",brand:"ModernJudaica",price:95,cats:["chanukah","decor","housewarming","wedding"],img:"https://images.unsplash.com/photo-1512389142860-9c449e58a543?w=1000&auto=format&fit=crop&crop=entropy&q=85",desc:"Striking modern sculptural brass menorah — statement décor year-round.",url:"https://www.amazon.com/s?k=Sculptural%20Brass%20Chanukah%20Menorah&tag=giftingbutler-20",badge:"Statement"},
+  {id:16,title:"Diamond Pendant Necklace",brand:"LuxeChain",price:185,cats:["jewelry","her","bat-mitzvah","wedding","anniversary","birthday"],img:"https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=1000&auto=format&fit=crop&crop=entropy&q=85",desc:"Delicate 14k gold pendant with pavé diamond accent.",url:"https://www.amazon.com/s?k=Diamond%20Pendant%20Necklace&tag=giftingbutler-20",badge:"Luxury"},
+  {id:17,title:"Custom Star Map — Framed Print",brand:"NightSky Co",price:58,cats:["anniversary","wedding","birthday","her","him"],img:"https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?w=1000&auto=format&fit=crop&crop=entropy&q=85",desc:"Personalized star map of any date. Archival print, elegantly framed.",url:"https://www.amazon.com/s?k=Custom%20Star%20Map%20Framed%20Print&tag=giftingbutler-20",badge:"Personal"},
+  {id:18,title:"Noise-Cancelling Headphones",brand:"SoundLux",price:149,cats:["tech","him","her","bar-mitzvah","bat-mitzvah","birthday"],img:"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1000&auto=format&fit=crop&crop=entropy&q=85",desc:"Studio-quality wireless headphones with 40-hour battery.",url:"https://www.amazon.com/s?k=Noise-Cancelling%20Headphones&tag=giftingbutler-20",badge:"Must-Have"},
+  {id:19,title:"Schottenstein Mishnayot Set",brand:"ArtScroll",price:199,cats:["bar-mitzvah","him","books"],img:"https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1000&auto=format&fit=crop&crop=entropy&q=85",desc:"Complete annotated Mishnayot in the acclaimed ArtScroll edition.",url:"https://www.amazon.com/s?k=Schottenstein%20Mishnayot%20Set&tag=giftingbutler-20",badge:"Torah"},
+  {id:20,title:"Belgian Chocolate Tower",brand:"ChocolAtelier",price:68,cats:["food","wedding","anniversary","housewarming","purim","chanukah","teacher"],img:"https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=1000&auto=format&fit=crop&crop=entropy&q=85",desc:"Handcrafted Belgian chocolates in 12 flavors. Ribbon-wrapped.",url:"https://www.amazon.com/s?k=Belgian%20Chocolate%20Tower&tag=giftingbutler-20",badge:"Gourmet"},
+  {id:21,title:"Leather-Bound Gratitude Journal",brand:"InkHaven",price:36,cats:["her","him","birthday","rosh-hashana","bat-mitzvah","teacher"],img:"https://images.unsplash.com/photo-1519791883288-dc8bd696e667?w=1000&auto=format&fit=crop&crop=entropy&q=85",desc:"Full-grain leather journal with gilded pages and daily reflection prompts.",url:"https://www.amazon.com/s?k=Leather-Bound%20Gratitude%20Journal&tag=giftingbutler-20",badge:"Mindful"},
+  {id:22,title:"LEGO Architecture Landmark Set",brand:"LEGO",price:54.99,cats:["children-9-12","children-4-8","grandchildren","birthday","bar-mitzvah"],img:"https://images.unsplash.com/photo-1619946794135-5bc917a27793?w=1000&auto=format&fit=crop&crop=entropy&q=85",desc:"Challenging LEGO Architecture set featuring iconic world landmarks.",url:"https://www.amazon.com/s?k=LEGO%20Architecture%20Landmark%20Set&tag=giftingbutler-20",badge:"Classic"},
+  {id:23,title:"Purim Crown & Costume Box",brand:"DressUpKing",price:89,cats:["purim","children-u3","children-4-8","grandchildren"],img:"https://images.unsplash.com/photo-1606791422814-be32c8209616?w=1000&auto=format&fit=crop&crop=entropy&q=85",desc:"Family Purim kit — crowns, capes, accessories. Reusable.",url:"https://www.amazon.com/s?k=Purim%20Crown%20Costume%20Box&tag=giftingbutler-20",badge:"Purim Fun"},
+  {id:24,title:"Modern Silver Shabbat Candlesticks",brand:"SterlingCrown",price:135,cats:["wedding","housewarming","bat-mitzvah","anniversary","her"],img:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1000&auto=format&fit=crop&crop=entropy&q=85",desc:"Elegant sterling silver Shabbat candlesticks. A cherished keepsake.",url:"https://www.amazon.com/s?k=Modern%20Silver%20Shabbat%20Candlesticks&tag=giftingbutler-20",badge:"Heirloom"},
+  {id:25,title:"Bedside Men's Valet Stand",brand:"Verona",price:49.99,cats:["him","decor","birthday","anniversary"],desc:"Bedside valet to organize keys, wallet, watch and phone overnight.",badge:"Organizer"},
+  {id:26,title:"Naki Radio Kids Music Player",brand:"Naki",price:59.99,cats:["children-u3","children-4-8","tech","grandchildren"],desc:"Screen-free kids music and story player loaded with wholesome content.",badge:"Kids Fave"},
+  {id:27,title:"Ami Magazine Subscription",brand:"Ami",price:24.99,cats:["books","him","her"],desc:"Weekly Jewish lifestyle and news magazine subscription.",badge:""},
+  {id:28,title:"Mishpacha Magazine Subscription",brand:"Mishpacha",price:24.99,cats:["books","him","her"],desc:"Family-favorite weekly Jewish magazine subscription.",badge:""},
+  {id:29,title:"24Six Kosher Music Player",brand:"24Six",price:79.99,cats:["tech","him","books"],desc:"Filtered kosher music streaming player for the whole family.",badge:""},
+  {id:30,title:"Newspaper & Magazine Stand Rack",brand:"HomeStyle",price:39.99,cats:["decor","him","housewarming"],desc:"Freestanding rack to keep newspapers and magazines tidy.",badge:""},
+  {id:31,title:"Scented Candles Gift Set",brand:"Aromabliss",price:29.99,cats:["decor","wellness","her","housewarming","birthday","teacher"],desc:"Hand-poured aromatherapy candle set in calming fragrances.",badge:"Cozy"},
+  {id:32,title:"Scented Plug-In Air Freshener",brand:"FreshHome",price:19.99,cats:["decor","wellness","housewarming"],desc:"Plug-in diffuser that keeps any room smelling fresh.",badge:""},
+  {id:33,title:"Scented Reed Diffuser",brand:"Aromabliss",price:24.99,cats:["decor","wellness","her","housewarming"],desc:"Elegant reed diffuser for long-lasting ambient fragrance.",badge:""},
+  {id:34,title:"Car Air Freshener Scent",brand:"AutoFresh",price:12.99,cats:["him","tech"],desc:"Long-lasting vent-clip car fragrance in fresh scents.",badge:""},
+  {id:35,title:"Personalized Hand Towels",brand:"MonogramCo",price:27.99,cats:["housewarming","wedding","her"],desc:"Soft monogrammed hand towels, personalized with any initials.",badge:"Personalized"},
+  {id:36,title:"Personalized Robe",brand:"MonogramCo",price:39.99,cats:["her","him","anniversary","wedding","wellness"],desc:"Plush embroidered robe customized with a name or monogram.",badge:"Personalized"},
+  {id:37,title:"Personalized Blanket",brand:"CozyPrint",price:44.99,cats:["her","him","baby","anniversary","housewarming","grandchildren"],desc:"Custom-printed cozy blanket with name, photo or design.",badge:"Personalized"},
+  {id:38,title:"Personalized Bath Towels",brand:"MonogramCo",price:34.99,cats:["housewarming","wedding"],desc:"Luxury monogrammed bath towel set.",badge:""},
+  {id:39,title:"Perfume & Cologne Gift Set",brand:"Maison",price:64.99,cats:["her","him","anniversary","birthday"],desc:"Designer fragrance gift set for him or her.",badge:"Bestseller"},
+  {id:40,title:"Car Hanging Air Freshener",brand:"AutoFresh",price:11.99,cats:["him"],desc:"Decorative hanging car freshener with a clean, lasting scent.",badge:""},
+  {id:41,title:"Steering Wheel Cover",brand:"AutoLux",price:21.99,cats:["him"],desc:"Premium grip steering wheel cover for a comfortable drive.",badge:""},
+  {id:42,title:"Kids Backyard Swing Set",brand:"PlayHaven",price:199.99,cats:["children-4-8","children-9-12","grandchildren"],desc:"Sturdy outdoor swing set for hours of backyard fun.",badge:""},
+  {id:43,title:"Ice Cream Maker Machine",brand:"ChillCo",price:69.99,cats:["food","housewarming","birthday"],desc:"Make fresh homemade ice cream, gelato and sorbet at home.",badge:""},
+  {id:44,title:"Countertop Ice Maker Machine",brand:"ChillCo",price:129.99,cats:["food","housewarming","tech"],desc:"Fast countertop ice maker — ready ice in minutes.",badge:"Top Rated"},
+  {id:45,title:"Leather Wallet",brand:"Tannery",price:34.99,cats:["him","birthday","anniversary"],desc:"Slim full-grain leather wallet with RFID protection.",badge:""},
+  {id:46,title:"Designer Handbag Purse",brand:"Vellora",price:89.99,cats:["her","birthday","anniversary","bat-mitzvah"],desc:"Elegant designer-style handbag for everyday luxury.",badge:"Elegant"},
+  {id:47,title:"Phone Case",brand:"CaseCraft",price:16.99,cats:["tech","him","her","children-9-12"],desc:"Protective shockproof phone case in many styles.",badge:""},
+  {id:48,title:"Fine Jewelry Set",brand:"LuxeChain",price:79.99,cats:["jewelry","her","bat-mitzvah","anniversary","wedding"],desc:"Coordinated necklace and earring jewelry gift set.",badge:"Luxury"},
+  {id:49,title:"Spa & Massage Gift Set",brand:"Serenity",price:54.99,cats:["wellness","her","anniversary","birthday"],desc:"At-home spa and massage relaxation gift box.",badge:"Self-Care"},
+  {id:50,title:"Chocolate Platter Gift Box",brand:"ChocolAtelier",price:49.99,cats:["food","wedding","anniversary","housewarming","purim"],desc:"Gourmet assorted chocolate platter, beautifully presented.",badge:"Gourmet"},
+  {id:51,title:"Amazon Gift Card",brand:"Amazon",price:50,cats:["birthday","wedding","bar-mitzvah","bat-mitzvah","him","her"],desc:"The always-welcome gift — let them choose exactly what they want.",badge:""},
+  {id:52,title:"Personalized Baby Elephant Plush",brand:"LoomyBaby",price:29.99,cats:["baby","children-u3","grandchildren"],desc:"Soft elephant plush embroidered with baby's name.",badge:"Personalized"},
+  {id:53,title:"Pacifier Clip",brand:"LoomyBaby",price:12.99,cats:["baby","children-u3"],desc:"Cute, secure pacifier clip that keeps soothers off the floor.",badge:""},
+  {id:54,title:"Doona Car Seat Stroller",brand:"Doona",price:550,cats:["baby","children-u3"],desc:"Award-winning car seat that converts to a stroller in seconds.",badge:"Premium"},
+  {id:55,title:"Baby Travel System Carriage",brand:"Carriage Co",price:299.99,cats:["baby","children-u3"],desc:"Complete travel-system carriage with car seat and bassinet.",badge:""},
+  {id:56,title:"Butterfly Folding Stroller",brand:"Bugaboo",price:399.99,cats:["baby","children-u3"],desc:"Ultra-compact one-hand folding travel stroller.",badge:""},
+  {id:57,title:"Preserved Roses in Acrylic Box",brand:"Everbloom",price:59.99,cats:["her","anniversary","wedding","bat-mitzvah"],desc:"Real preserved roses that last for years in a clear lucite box.",badge:"Forever"},
+  {id:58,title:"Robot Vacuum Cleaner",brand:"iRobot Roomba",price:249.99,cats:["tech","housewarming","wedding"],desc:"Smart robot vacuum that cleans floors on a schedule.",badge:"Top Rated"},
+  {id:59,title:"Tablet Computer",brand:"TechPro",price:159.99,cats:["tech","children-9-12","bar-mitzvah","bat-mitzvah"],desc:"Versatile tablet for learning, reading and entertainment.",badge:""},
+  {id:60,title:"Wireless Earbuds",brand:"SoundLux",price:49.99,cats:["tech","him","her","bar-mitzvah","bat-mitzvah","birthday"],desc:"True wireless earbuds with crisp sound and long battery life.",badge:"Bestseller"},
+  {id:61,title:"Bluetooth Speaker",brand:"SoundLux",price:39.99,cats:["tech","him","her","birthday"],desc:"Portable waterproof Bluetooth speaker with big sound.",badge:""},
+  {id:62,title:"Kids Art & Craft Set",brand:"ArtJoy",price:29.99,cats:["children-4-8","children-9-12","grandchildren"],desc:"All-in-one art and craft kit to spark creativity.",badge:"Creative"},
+  {id:63,title:"Electric Scooter",brand:"GlideX",price:279.99,cats:["tech","him","children-9-12"],desc:"Foldable electric scooter for easy commuting and fun.",badge:""},
+  {id:64,title:"Kids Bike & Scooter",brand:"RideOn",price:89.99,cats:["children-4-8","children-9-12","grandchildren"],desc:"Durable kids bike and scooter for outdoor adventures.",badge:""},
+  {id:65,title:"Electric Ride-On Kids Car",brand:"RideOn",price:199.99,cats:["children-u3","children-4-8","grandchildren"],desc:"Battery-powered ride-on car with realistic features.",badge:"Kids Fave"},
+  {id:66,title:"Kids Outdoor Slide",brand:"PlayHaven",price:79.99,cats:["children-u3","children-4-8"],desc:"Safe, sturdy slide for indoor or backyard play.",badge:""},
+  {id:67,title:"Waterdale Acrylic Judaica",brand:"Waterdale",price:44.99,cats:["decor","housewarming","wedding","rosh-hashana"],desc:"Designer acrylic Judaica and tableware accents.",badge:""},
+  {id:68,title:"Baby Clothes Gift Set",brand:"LoomyBaby",price:34.99,cats:["baby","children-u3","grandchildren"],desc:"Soft organic-cotton baby outfit gift set.",badge:""},
+  {id:69,title:"Floating Pen Novelty",brand:"NoveltyCo",price:9.99,cats:["children-9-12","books","bar-mitzvah"],desc:"Fun floating-action novelty pen — a great small gift.",badge:""},
+  {id:70,title:"Mini Projector",brand:"CineCast",price:89.99,cats:["tech","him","birthday"],desc:"Compact home projector for movie nights anywhere.",badge:""},
+  {id:71,title:"Ice Bullet Mold & Shot Glasses",brand:"BarCraft",price:19.99,cats:["him","lchaim-vort","housewarming"],desc:"Bullet-shaped ice molds with matching shot glasses.",badge:""},
+  {id:72,title:"3D Printer",brand:"MakerBot",price:229.99,cats:["tech","him","children-9-12"],desc:"Easy-to-use 3D printer for makers and creators.",badge:"Maker"},
+  {id:73,title:"Sterling Silver Gift",brand:"SterlingCrown",price:120,cats:["wedding","anniversary","bar-mitzvah","housewarming"],desc:"Fine sterling silver keepsake — a treasured heirloom gift.",badge:"Heirloom"},
+  {id:74,title:"Butterfly Decorative Wall Art",brand:"DecoNest",price:24.99,cats:["decor","her","bat-mitzvah","housewarming"],desc:"Set of decorative butterfly accents for walls and shelves.",badge:""},
+  {id:75,title:"Indoor House Plant",brand:"GreenLeaf",price:29.99,cats:["decor","housewarming","wellness"],desc:"Easy-care live house plant in a stylish pot.",badge:""},
+  {id:76,title:"BBQ Grill",brand:"GrillMaster",price:179.99,cats:["him","housewarming","food"],desc:"Versatile outdoor grill for backyard cookouts.",badge:""},
+  {id:77,title:"Newhaus Aperitif Gift",brand:"Haus",price:39.99,cats:["food","him","housewarming","lchaim-vort"],desc:"Craft aperitif gift — a sophisticated toast.",badge:""},
+  {id:78,title:"Bath & Body Works Gift Set",brand:"Bath & Body Works",price:39.99,cats:["wellness","her","birthday"],desc:"Signature bath and body fragrance gift set.",badge:""},
+  {id:79,title:"Wooden Shtender Book Stand",brand:"JudaicaCraft",price:69.99,cats:["bar-mitzvah","books","him","housewarming"],desc:"Handsome adjustable wooden shtender / book stand.",badge:""},
+  {id:80,title:"Digital Camera",brand:"PixPro",price:189.99,cats:["tech","him","her","bar-mitzvah","bat-mitzvah"],desc:"Easy-to-use digital camera for capturing memories.",badge:""},
+  {id:81,title:"Charcuterie Meat Board",brand:"OakCraft",price:44.99,cats:["food","wedding","housewarming","anniversary"],desc:"Premium acacia charcuterie board with serving tools.",badge:""},
+  {id:82,title:"Schnapps Decanter Set",brand:"BarCraft",price:49.99,cats:["him","lchaim-vort","housewarming"],desc:"Elegant glass decanter set for schnapps and spirits.",badge:""},
+  {id:83,title:"Electronic Dance Pad Game",brand:"FitFun",price:49.99,cats:["children-9-12","children-4-8","tech"],desc:"Music dance mat that gets kids moving and laughing.",badge:""},
+  {id:84,title:"LED Countdown Clock",brand:"TimeKeeper",price:29.99,cats:["decor","tech","him"],desc:"Digital countdown clock for big days and events.",badge:""},
+  {id:85,title:"Michael Kors Watch",brand:"Michael Kors",price:149.99,cats:["her","him","bat-mitzvah","bar-mitzvah","anniversary"],desc:"Designer Michael Kors watch — timeless and refined.",badge:"Designer"},
+  {id:86,title:"Casio Watch",brand:"Casio",price:49.99,cats:["him","bar-mitzvah","birthday","tech"],desc:"Reliable classic Casio watch built to last.",badge:"Classic"},
+  {id:87,title:"Espresso & Coffee Maker",brand:"BrewLux",price:129.99,cats:["food","housewarming","wedding","him","her"],desc:"Barista-style espresso and coffee machine for home.",badge:"Top Rated"},
+  {id:88,title:"Nice Picture Frame",brand:"FrameWorks",price:24.99,cats:["decor","housewarming","wedding","anniversary"],desc:"Elegant frame to showcase a cherished photo.",badge:""},
+  {id:89,title:"Custom Family Photo Print",brand:"FrameWorks",price:34.99,cats:["decor","anniversary","housewarming","her"],desc:"Framed custom print of a favorite family photo.",badge:"Personalized"},
+  {id:90,title:"Bracelet, Earrings & Ring Set",brand:"LuxeChain",price:44.99,cats:["jewelry","her","bat-mitzvah","anniversary","birthday"],desc:"Matching bracelet, earring and ring jewelry set.",badge:""},
+  {id:91,title:"Jump Rope",brand:"FitFun",price:9.99,cats:["children-4-8","children-9-12"],desc:"Adjustable jump rope for active outdoor play.",badge:""},
+  {id:92,title:"Chinese Jump Rope",brand:"FitFun",price:7.99,cats:["children-4-8","children-9-12"],desc:"Classic stretchy Chinese jump rope for group games.",badge:""},
+  {id:93,title:"Kugelach Jacks Game",brand:"ClassicPlay",price:8.99,cats:["children-4-8","children-9-12","bat-mitzvah"],desc:"Traditional kugelach / jacks game set.",badge:""},
+  {id:94,title:"Sticker Book & Sticker Set",brand:"StickerJoy",price:12.99,cats:["children-u3","children-4-8"],desc:"Reusable sticker book bursting with fun stickers.",badge:""},
+  {id:95,title:"Stationery Gift Set",brand:"InkHaven",price:19.99,cats:["her","books","bat-mitzvah","birthday","teacher"],desc:"Beautiful stationery set with notecards and pen.",badge:""},
+  {id:96,title:"Bestselling Books",brand:"BookNook",price:24.99,cats:["books","him","her","bar-mitzvah"],desc:"Highly-rated bestselling books across genres.",badge:""},
+  {id:97,title:"Seforim Hebrew Books",brand:"ArtScroll",price:49.99,cats:["books","bar-mitzvah","him"],desc:"Classic seforim and Hebrew learning books.",badge:"Torah"},
+  {id:98,title:"Kids Prize Box Toy Assortment",brand:"PartyJoy",price:24.99,cats:["children-u3","children-4-8"],desc:"Assorted small toys to fill a kids' prize box.",badge:""},
+  {id:99,title:"Kids Wallet",brand:"RideOn",price:11.99,cats:["children-4-8","children-9-12"],desc:"Fun first wallet to help kids learn to save.",badge:""},
+  {id:100,title:"Etch A Sketch",brand:"Etch A Sketch",price:14.99,cats:["children-4-8","children-9-12","grandchildren"],desc:"The timeless drawing toy loved across generations.",badge:"Classic"},
+  {id:101,title:"Toy Trucks",brand:"RideOn",price:19.99,cats:["children-u3","children-4-8","grandchildren"],desc:"Tough toy trucks built for indoor and sandbox play.",badge:""},
+  {id:102,title:"LEGO Building Set",brand:"LEGO",price:49.99,cats:["children-4-8","children-9-12","bar-mitzvah","grandchildren"],desc:"Creative LEGO building set for hours of fun.",badge:"Classic"},
+  {id:103,title:"Magnetic Tiles Building Set",brand:"MagBlocks",price:39.99,cats:["children-u3","children-4-8","grandchildren"],desc:"Colorful magnetic tiles for open-ended STEM building.",badge:"STEM"},
+  {id:104,title:"Kids Flashlight",brand:"AdventureKids",price:12.99,cats:["children-4-8","children-9-12"],desc:"Durable kid-friendly flashlight for adventures.",badge:""},
+  {id:105,title:"Kids Microscope",brand:"RoboEdu",price:34.99,cats:["children-9-12","bar-mitzvah","tech"],desc:"Beginner microscope to explore the tiny world.",badge:"STEM"},
+  {id:106,title:"Lincoln Logs Building Set",brand:"Lincoln Logs",price:29.99,cats:["children-4-8","children-9-12","grandchildren"],desc:"Classic wooden Lincoln Logs construction set.",badge:""},
+  {id:107,title:"Kids Tool Box Set",brand:"BuilderKids",price:24.99,cats:["children-4-8","children-9-12"],desc:"Pretend-play tool box that sparks little builders.",badge:""},
+  {id:108,title:"Tool Set",brand:"HandyPro",price:59.99,cats:["him","housewarming"],desc:"Complete home tool set for every fix-it job.",badge:""},
+  {id:109,title:"Kids Tool Set",brand:"BuilderKids",price:19.99,cats:["children-4-8","children-9-12"],desc:"Safe, realistic tool set made just for kids.",badge:""},
+  {id:110,title:"Framed Painting Wall Art",brand:"DecoNest",price:49.99,cats:["decor","housewarming","wedding","anniversary"],desc:"Gallery-style framed painting to elevate any room.",badge:""},
+  {id:111,title:"Board Game Set Chess Risk",brand:"ClassicPlay",price:39.99,cats:["children-9-12","him","bar-mitzvah","books"],desc:"Family board game collection — chess, Risk and more.",badge:"Family"},
+  {id:112,title:"Family Swimming Pool",brand:"SplashCo",price:99.99,cats:["children-u3","children-4-8"],desc:"Easy-set family pool for summer backyard fun.",badge:""},
+  {id:113,title:"Designer Shoes",brand:"Footwear Co",price:79.99,cats:["him","her","birthday"],desc:"Stylish designer shoes for everyday wear.",badge:""},
+  {id:114,title:"Silk Necktie",brand:"Tannery",price:24.99,cats:["him","bar-mitzvah","wedding","anniversary"],desc:"Premium silk necktie in refined patterns.",badge:""},
+  {id:115,title:"Custom Tailored Suit",brand:"Bespoke",price:299.99,cats:["him","wedding","bar-mitzvah"],desc:"Made-to-measure tailored suit for a perfect fit.",badge:"Premium"},
+  {id:117,title:"Travel Tie Holder Case",brand:"Tannery",price:17.99,cats:["him","wedding"],desc:"Compact travel case that keeps ties crease-free.",badge:""},
+  {id:118,title:"Electric Tie Rack Organizer",brand:"ClosetPro",price:49.99,cats:["him","decor"],desc:"Motorized tie rack that rotates at the touch of a button.",badge:""},
+  {id:119,title:"AirTag & Item Tracker",brand:"TrackIt",price:29.99,cats:["tech","him","her"],desc:"Bluetooth tracker to find keys, bags and luggage.",badge:"Top Rated"},
+  {id:120,title:"Designer Pen",brand:"InkHaven",price:39.99,cats:["him","her","books","bar-mitzvah"],desc:"Refined designer pen in a gift box.",badge:"Elegant"},
+  {id:121,title:"Designer Sunglasses",brand:"ShadeLux",price:59.99,cats:["him","her","birthday"],desc:"UV-protective designer sunglasses with a luxe look.",badge:"Designer"},
+  {id:122,title:"Designer Belt",brand:"Tannery",price:49.99,cats:["him","birthday"],desc:"Genuine leather designer belt with signature buckle.",badge:"Designer"},
+  {id:123,title:"Designer Bangles",brand:"LuxeChain",price:34.99,cats:["jewelry","her","bat-mitzvah","anniversary"],desc:"Stackable designer bangles with elegant finish.",badge:""},
+  {id:124,title:"3D Crystal Laser Photo",brand:"CrystalArt",price:39.99,cats:["decor","anniversary","wedding","her","housewarming"],desc:"Laser-etched 3D crystal keepsake of a favorite photo.",badge:"Personalized"},
+  {id:125,title:"Acrylic Folding Luggage Rack",brand:"Sumerflos",price:69.99,cats:["housewarming","him","her","birthday"],desc:"Stylish acrylic folding luggage rack — a sleek and practical addition to any guest room.",badge:"Trending"},
+  {id:126,title:"Hydroponics Herb Garden (12-Pod, LED)",brand:"Ahopegarden",price:59.99,cats:["housewarming","her","him","birthday"],desc:"12-pod indoor hydroponics garden with full-spectrum LED — grow fresh herbs year-round.",badge:"Unique"},
+  {id:127,title:"GE Profile Opal 2.0 Ultra Nugget Ice Maker",brand:"GE Profile",price:399.00,cats:["cool-find","him","her","housewarming","birthday"],img:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&auto=format&fit=crop&q=85",desc:"Countertop nugget ice maker with scale-inhibiting filter, 1-gal side tank — 38 lbs of pebble ice per day with WiFi smart control.",url:"https://www.amazon.com/dp/B0FWLSYPN9/?tag=giftingbutler-20",badge:"Cool Find"},
+  {id:128,title:"Monogrammed Fingertip Towels — Set of 4",brand:"Creative Scents",price:27.11,cats:["her","housewarming","wedding","anniversary"],img:"https://images.unsplash.com/photo-1583845112203-29329902332e?w=800&auto=format&fit=crop&q=85",desc:"Plush 100% cotton fingertip towels with silver embroidered monogram.",url:"https://www.amazon.com/dp/B01IU9OSNM/?tag=giftingbutler-20",badge:"Personalized"},
+  {id:129,title:"Shark FlexBreeze Pro Mist Fan",brand:"Shark",price:179.99,cats:["cool-find","him","her","housewarming"],img:"https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=800&auto=format&fit=crop&q=85",desc:"Indoor & outdoor oscillating fan with built-in misting, 24-hr battery, and remote.",url:"https://www.amazon.com/dp/B0DMBXVFDK/?tag=giftingbutler-20",badge:""},
+  {id:130,title:"Shark ChillPill 3-in-1 Personal Cooler",brand:"Shark",price:129.00,cats:["cool-find","him","her","birthday"],img:"https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=85",desc:"Handheld fan + InstaChill cooling plate + dry-touch mist — drops skin temp up to 16°F instantly.",url:"https://www.amazon.com/dp/B0GGTPW6Q9/?tag=giftingbutler-20",badge:"Cool Find"},
+  {id:131,title:"Ninja CREAMi Scoop & Swirl Ice Cream Maker",brand:"Ninja",price:279.95,cats:["cool-find","her","housewarming","birthday"],img:"https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=800&auto=format&fit=crop&q=85",desc:"13-in-1 ice cream machine for soft serve, sorbet, milkshakes, and frozen yogurt.",url:"https://www.amazon.com/dp/B0DSJW8SFG/?tag=giftingbutler-20",badge:""},
+  {id:132,title:"HoMedics Drift Sandscape Zen Garden",brand:"HoMedics",price:99.99,cats:["cool-find","him","her","birthday"],img:"https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&auto=format&fit=crop&q=85",desc:"11\" smart LED sandscape that creates mesmerizing rippling patterns — WiFi-enabled kinetic desk art.",url:"https://www.amazon.com/dp/B0CV8VYPXM/?tag=giftingbutler-20",badge:"Unique"},
+  {id:133,title:"5-Tier Rock Falls Tabletop Fountain",brand:"xpiyaer",price:59.99,cats:["housewarming","her","cool-find"],img:"https://images.unsplash.com/photo-1553361371-9b22f78e8b1d?w=800&auto=format&fit=crop&q=85",desc:"15.7\" cascading rock fountain with LED lights — brings calming water sounds to any desk or room.",url:"https://www.amazon.com/dp/B0CFV46Z12/?tag=giftingbutler-20",badge:""},
+  {id:134,title:"Light-Up Whale Bath Toy Sprinkler",brand:"Gigilli",price:12.74,cats:["children-u3","baby"],img:"https://images.unsplash.com/photo-1576201836106-db1758fd1c97?w=800&auto=format&fit=crop&q=85",desc:"Glowing whale that sprinkles water — perfect sensory play for babies and toddlers 6–36 months.",url:"https://www.amazon.com/dp/B08BXHC57D/?tag=giftingbutler-20",badge:""},
+  {id:135,title:"Hoverpen Interstellar — Floating Ballpoint",brand:"novium",price:84.15,cats:["him","cool-find","teacher","birthday"],img:"https://images.unsplash.com/photo-1455390582262-044cdead277a?w=800&auto=format&fit=crop&q=85",desc:"German-engineered pen that balances and spins on its tip — precision ink, futuristic design.",url:"https://www.amazon.com/dp/B09DKXVWV4/?tag=giftingbutler-20",badge:"Unique"},
+  {id:136,title:"MOVA Self-Rotating Globe",brand:"MOVA",price:249.00,cats:["him","cool-find","teacher","birthday","anniversary"],img:"https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?w=800&auto=format&fit=crop&q=85",desc:"4.5\" globe that rotates silently on its own using ambient light — no batteries, no wires.",url:"https://www.amazon.com/dp/B002U21ZZK/?tag=giftingbutler-20",badge:"Unique"},
+  {id:137,title:"Levitating Spinning Gyroscope",brand:"FidgetPro",price:18.99,cats:["him","cool-find","children-9-12","birthday"],img:"https://images.unsplash.com/photo-1614624532983-4ce03382d63d?w=800&auto=format&fit=crop&q=85",desc:"Desktop optical illusion gyroscope that spins and floats — hypnotic stress-relief sculpture.",url:"https://www.amazon.com/dp/B0F1MP9RMN/?tag=giftingbutler-20",badge:"Cool Find"},
+  {id:138,title:"Levitating Moon Lamp — 16 Colors",brand:"VGAzer",price:71.99,cats:["cool-find","her","him","birthday"],img:"https://images.unsplash.com/photo-1532012197267-da84d127e765?w=800&auto=format&fit=crop&q=85",desc:"3D-printed moon that floats and spins in mid-air with 16 color modes.",url:"https://www.amazon.com/dp/B07H1F1BY2/?tag=giftingbutler-20",badge:"Unique"},
+  {id:139,title:"Ninja SLUSHi Frozen Drink Machine",brand:"Ninja",price:199.99,cats:["cool-find","him","her","housewarming","birthday"],img:"https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=800&auto=format&fit=crop&q=85",desc:"88-oz slushie machine with RapidChill tech — makes frozen drinks in minutes.",url:"https://www.amazon.com/dp/B0D2LZYQ2M/?tag=giftingbutler-20",badge:"Cool Find"},
+  {id:140,title:"Ninja Fireside360 Outdoor Fire Pit & Heater",brand:"Ninja",price:449.99,cats:["cool-find","him","housewarming"],img:"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&auto=format&fit=crop&q=85",desc:"3-mode propane fire pit and outdoor heater — 80,000 BTU smokeless flame for patio or deck.",url:"https://www.amazon.com/dp/B0FDMBP1BM/?tag=giftingbutler-20",badge:""},
+  {id:141,title:"Ninja FrostVault 65qt Wheeled Cooler",brand:"Ninja",price:279.99,cats:["cool-find","him","housewarming","birthday"],img:"https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&auto=format&fit=crop&q=85",desc:"65-qt premium wheeled cooler with integrated cold dry zone drawer — keeps ice frozen for days.",url:"https://www.amazon.com/dp/B0GJFW68TZ/?tag=giftingbutler-20",badge:""},
+  {id:142,title:"Portable Bluetooth CD Player with Speakers",brand:"Kegaudio",price:23.05,cats:["her","him","birthday"],img:"https://images.unsplash.com/photo-1619983081563-430f63602796?w=800&auto=format&fit=crop&q=85",desc:"Rechargeable CD player with Bluetooth, built-in speakers, FM radio, and USB.",url:"https://www.amazon.com/dp/B0DZ2JJWT5/?tag=giftingbutler-20",badge:""},
+  {id:143,title:"Ninja 1500W Kitchen System & Blender",brand:"Ninja",price:129.99,cats:["her","housewarming","birthday"],img:"https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=800&auto=format&fit=crop&q=85",desc:"All-in-one food processor and blender — smoothies, salsa, dough, and frozen drinks.",url:"https://www.amazon.com/dp/B00939I7EK/?tag=giftingbutler-20",badge:""},
+  {id:144,title:"NordicTrack T Series Treadmill",brand:"NordicTrack",price:639.00,cats:["him","her","birthday","housewarming"],img:"https://images.unsplash.com/photo-1576678927484-cc907957088c?w=800&auto=format&fit=crop&q=85",desc:"Premium home treadmill with iFIT training, a quiet motor, and foldable design.",url:"https://www.amazon.com/dp/B0193V3DJ6/?tag=giftingbutler-20",badge:""},
+  {id:145,title:"Samsung Galaxy Buds 3 Pro",brand:"Samsung",price:149.99,cats:["him","cool-find","birthday","anniversary"],img:"https://images.unsplash.com/photo-1590658165737-15a047b7c5a0?w=800&auto=format&fit=crop&q=85",desc:"AI noise-cancelling earbuds with sound optimization and a redesigned comfort fit.",url:"https://www.amazon.com/dp/B0D9YZJ3V7/?tag=giftingbutler-20",badge:""},
+  {id:146,title:"Samsung Galaxy Buds 4 (2026)",brand:"Samsung",price:149.99,cats:["him","cool-find","birthday","anniversary"],img:"https://images.unsplash.com/photo-1590658165737-15a047b7c5a0?w=800&auto=format&fit=crop&q=85",desc:"Next-gen earbuds with Hi-Res Audio, ANC, Live Translation, and IP54.",url:"https://www.amazon.com/dp/B0G1PCTTH6/?tag=giftingbutler-20",badge:"New"}
+];
+
+// Default sponsored IDs
+const DEFAULT_SPONS = new Set([52,57,49,87,85,102,58,50,125,126,83,48]);
+
+// ── State ──
+let overrides = {};   // {id: {spons, badge, price, img, url, active}}
+let siteSettings = {};
+let gwSettings = {};
+let gwActive = true;
+
+// ── Auth ──
+auth.onAuthStateChanged(user => {
+  if (user) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    document.getElementById('dash-email').textContent = user.email;
+    loadAll();
+  } else {
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('dashboard').style.display = 'none';
+  }
+});
+
+function doLogin() {
+  const email = document.getElementById('adm-email').value.trim();
+  const pass  = document.getElementById('adm-pass').value;
+  const btn   = document.getElementById('login-btn');
+  const err   = document.getElementById('login-err');
+  if (!email || !pass) { err.textContent = 'Enter email and password.'; return; }
+  btn.disabled = true; btn.textContent = 'Signing in…'; err.textContent = '';
+  auth.signInWithEmailAndPassword(email, pass)
+    .catch(e => {
+      err.textContent = e.message.replace('Firebase: ','').replace(/\(auth\/.*\)/,'').trim();
+      btn.disabled = false; btn.textContent = 'Sign In';
+    });
+}
+
+function doLogout() {
+  auth.signOut();
+}
+
+// ── Load everything ──
+async function loadAll() {
+  await loadOverrides();
+  await loadSettings();
+  await loadGWSettings();
+  renderStats();
+  initCatBubbles();
+  renderProdTable();
+  loadGiveawayEntries();
+}
+
+async function loadOverrides() {
+  try {
+    const snap = await db.collection('product_overrides').get();
+    snap.forEach(doc => { overrides[parseInt(doc.id)] = doc.data(); });
+  } catch(e) { console.warn('overrides:', e); }
+}
+
+async function loadSettings() {
+  try {
+    const doc = await db.collection('site_settings').doc('main').get();
+    if (doc.exists) {
+      siteSettings = doc.data();
+      if (siteSettings.twitter) document.getElementById('s-twitter').value = siteSettings.twitter;
+      if (siteSettings.tiktok)  document.getElementById('s-tiktok').value  = siteSettings.tiktok;
+      if (siteSettings.youtube) document.getElementById('s-youtube').value = siteSettings.youtube;
+      if (siteSettings.tagline) document.getElementById('s-tagline').value = siteSettings.tagline;
+      if (siteSettings.email)   document.getElementById('s-email').value   = siteSettings.email;
+      if (siteSettings.banner)  document.getElementById('s-banner').value  = siteSettings.banner;
+      if (siteSettings.bannerColor) document.getElementById('s-banner-color').value = siteSettings.bannerColor;
+      if (siteSettings.sponsIds) document.getElementById('s-spons-ids').value = siteSettings.sponsIds;
+    }
+  } catch(e) { console.warn('settings:', e); }
+}
+
+async function loadGWSettings() {
+  try {
+    const now = new Date();
+    const week = now.getFullYear()+'-W'+String(Math.ceil((now - new Date(now.getFullYear(),0,1))/(7*86400000))).padStart(2,'0');
+    document.getElementById('gw-week').textContent = week;
+
+    // Load prize/fine-print from site_settings/giveaway (same place the site reads)
+    const settDoc = await db.collection('site_settings').doc('giveaway').get();
+    if (settDoc.exists) {
+      gwSettings = settDoc.data();
+      gwActive = gwSettings.active !== false;
+      const fpEl = document.getElementById('gw-fine-print');
+      if (gwSettings.finePrint && !gwSettings.finePrint.includes('Must be 18')) fpEl.value = gwSettings.finePrint;
+      if (gwSettings.prizeDesc) document.getElementById('gw-prize-desc').value = gwSettings.prizeDesc;
+    }
+    document.getElementById('gw-active-toggle').classList.toggle('on', gwActive);
+
+    // Last winner
+    const winnerDoc = await db.collection('giveaway_meta').doc('lastWinner').get();
+    document.getElementById('gw-winner').textContent = winnerDoc.exists ? (winnerDoc.data().email || '—') : '—';
+  } catch(e) { console.warn('gw:', e); }
+}
+
+// ── Products ──
+function getProductState(p) {
+  const ov = overrides[p.id] || {};
+  const url = ov.url || p.url || '';
+  const defaultStore = url.toLowerCase().includes('amazon') ? 'Amazon' : '';
+  return {
+    ...p,
+    title:   ov.title   || p.title,
+    brand:   ov.brand   || p.brand  || '',
+    store:   ov.store   !== undefined ? ov.store : defaultStore,
+    price:   ov.price   ?? p.price,
+    badge:   ov.badge   ?? p.badge,
+    img:     ov.img     || p.img    || '',
+    url,
+    desc:    ov.desc    || p.desc   || '',
+    cats:    ov.cats    || p.cats   || [],
+    spons:   ov.spons !== undefined ? ov.spons : DEFAULT_SPONS.has(p.id),
+    tziut:   ov.tziut === true,
+    carousel: ov.carousel === true,
+    carouselOrder: ov.carouselOrder || 999,
+    active:  ov.active !== false && ov.deleted !== true,
+    deleted: ov.deleted === true
+  };
+}
+
+function renderStats() {
+  const total  = PRODUCTS.length;
+  const spons  = PRODUCTS.filter(p => getProductState(p).spons).length;
+  const hidden = PRODUCTS.filter(p => !getProductState(p).active).length;
+  document.getElementById('prod-stats').innerHTML =
+    `<div class="stat-card"><div class="sv">${total}</div><div class="sl">Total Products</div></div>
+     <div class="stat-card"><div class="sv" style="color:var(--plum)">${spons}</div><div class="sl">Sponsored</div></div>
+     <div class="stat-card"><div class="sv" style="color:var(--red)">${hidden}</div><div class="sl">Hidden</div></div>`;
+}
+
+const ADMIN_CATS = [
+  {id:'anniversary',label:'💑 Anniversary'},{id:'baby',label:'🍼 Baby'},{id:'bar-mitzvah',label:'📖 Bar Mitzvah'},{id:'bat-mitzvah',label:'✡️ Bat Mitzvah'},
+  {id:'birthday',label:'🎂 Birthday'},{id:'books',label:'📚 Books'},{id:'chanukah',label:'🕎 Chanukah'},
+  {id:'children-u3',label:'🧸 Under 3'},{id:'children-4-8',label:'🎮 Ages 4–8'},{id:'children-9-12',label:'🎨 Ages 9–12'},
+  {id:'cool-find',label:'✨ Cool Finds'},{id:'decor',label:'🏡 Décor'},{id:'food',label:'🍰 Food'},
+  {id:'grandchildren',label:'🎧 Teens'},{id:'her',label:'👜 For Her'},{id:'him',label:'👔 For Him'},
+  {id:'housewarming',label:'🏠 Housewarming'},{id:'jewelry',label:'💎 Jewelry'},{id:"lchaim-vort",label:"🥂 L'Chaim/Vort"},
+  {id:'personalized',label:'✏️ Personalized'},{id:'purim',label:'🎭 Purim'},{id:'rosh-hashana',label:'🍎 Rosh Hashana'},
+  {id:'teacher',label:'🍎 Teacher'},{id:'tech',label:'💻 Tech'},{id:'upsherin',label:'✂️ Upsherin'},
+  {id:'wedding',label:'💍 Wedding'},{id:'wedding-shower',label:'🥂 Wedding Shower'},{id:'wellness',label:'🧘 Wellness'}
+];
+window._adminCat = '';
+window._sortField = '';
+window._sortDir = 1;
+function toggleSort(field) {
+  if (window._sortField === field) window._sortDir *= -1;
+  else { window._sortField = field; window._sortDir = 1; }
+  ['price','spons','store','active'].forEach(f => {
+    const th = document.getElementById('th-'+f);
+    if (th) th.textContent = (f==='price'?'Price':f==='spons'?'Sponsored':f==='store'?'Sold At':'Visible') + (window._sortField===f?(window._sortDir===1?' ↑':' ↓'):' ↕');
+  });
+  renderProdTable();
+}
+function initCatBubbles() {
+  const wrap = document.getElementById('cat-filter-wrap');
+  if (!wrap) return;
+  wrap.innerHTML = [''].concat(ADMIN_CATS.map(c=>c.id)).map((id,i) => {
+    const label = i===0 ? 'All' : ADMIN_CATS[i-1].label;
+    const on = window._adminCat === id;
+    return `<button onclick="window._adminCat='${id}';document.getElementById('prod-search').value='';initCatBubbles();renderProdTable()" style="padding:4px 11px;border-radius:50px;border:1.5px solid ${on?'var(--plum)':'var(--brd)'};background:${on?'var(--plum)':'var(--white)'};color:${on?'#fff':'var(--ink)'};font-size:.76rem;font-weight:${on?700:500};cursor:pointer;white-space:nowrap">${label}</button>`;
+  }).join('');
+}
+
+function renderProdTable() {
+  const q     = document.getElementById('prod-search').value.toLowerCase();
+  const cat   = window._adminCat || '';
+  const filt  = document.getElementById('spons-filter').value;
+
+  let list = PRODUCTS.map(p => getProductState(p));
+  if (q)   list = list.filter(p => p.title.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q));
+  if (cat) list = list.filter(p => p.cats.includes(cat));
+  if (filt === 'spons')    list = list.filter(p => p.spons);
+  if (filt === 'active')   list = list.filter(p => p.active);
+  if (filt === 'inactive') list = list.filter(p => !p.active);
+
+  // Sort
+  if (window._sortField) {
+    list.sort((a, b) => {
+      let av = a[window._sortField], bv = b[window._sortField];
+      if (typeof av === 'boolean') av = av ? 1 : 0;
+      if (typeof bv === 'boolean') bv = bv ? 1 : 0;
+      if (typeof av === 'string') return window._sortDir * av.localeCompare(bv);
+      return window._sortDir * ((av||0) - (bv||0));
+    });
+  }
+
+  document.getElementById('prod-count-badge').textContent = list.length;
+
+  const rows = list.map(p => `
+    <tr style="cursor:pointer;${p.deleted?'opacity:.45':p.active?'':'background:#fff5f5'}" onclick="openModal(${p.id})">
+      <td onclick="event.stopPropagation()"><input type="checkbox" class="row-chk" data-id="${p.id}" onchange="updateBulkBar()" style="accent-color:#5B2D8E;width:15px;height:15px;cursor:pointer"></td>
+      <td><img class="prod-img" src="${p.img || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23EDE5F8%22/%3E%3Ctext x=%2220%22 y=%2226%22 font-size=%2216%22 text-anchor=%22middle%22%3E🎁%3C/text%3E%3C/svg%3E'}" alt="${p.title}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23EDE5F8%22/%3E%3C/svg%3E'"></td>
+      <td>
+        <div style="font-weight:600;font-size:.85rem">${p.deleted?'<span style="color:var(--red);font-size:.72rem">DELETED</span> ':''}<span style="${p.deleted?'text-decoration:line-through':''}">${p.title}</span></div>
+        <div style="color:var(--muted);font-size:.76rem">${p.store?p.store+' · ':''}${p.brand?p.brand+' · ':''}ID ${p.id}</div>
+      </td>
+      <td onclick="event.stopPropagation()">
+        ${p.deleted
+          ? `<span style="font-size:.75rem;color:var(--red);font-weight:700">Deleted</span>`
+          : `<div class="spons-toggle" onclick="toggleActive(${p.id})">
+              <div class="toggle-track${p.active?' on':''}" id="at-${p.id}" style="${p.active?'background:var(--green)':''}"><div class="toggle-thumb"></div></div>
+            </div>`
+        }
+      </td>
+      <td onclick="event.stopPropagation()">
+        <div class="spons-toggle" onclick="toggleSpons(${p.id})">
+          <div class="toggle-track${p.spons?' on':''}" id="st-${p.id}"><div class="toggle-thumb"></div></div>
+          <span style="font-size:.78rem;color:var(--muted)">${p.spons?'Yes':'No'}</span>
+        </div>
+      </td>
+      <td onclick="event.stopPropagation()">
+        <div style="display:flex;align-items:center;gap:.4rem">
+          <div class="spons-toggle" onclick="setOverride(${p.id},'carousel',!${p.carousel});renderProdTable();renderStats()">
+            <div class="toggle-track${p.carousel?' on':''}" id="cr-${p.id}" style="${p.carousel?'background:var(--amber)':''}"><div class="toggle-thumb"></div></div>
+          </div>
+          ${p.carousel?`<input type="number" min="1" max="99" value="${p.carouselOrder||''}" placeholder="#" title="Position in carousel (1=first)" style="width:38px;padding:2px 4px;border:1px solid var(--brd);border-radius:5px;font-size:.75rem;text-align:center" onchange="setOverride(${p.id},'carouselOrder',parseInt(this.value)||999)">`:``}
+        </div>
+      </td>
+      <td onclick="event.stopPropagation()"><input class="badge-inp" value="${p.store||''}" placeholder="Amazon" onchange="setOverride(${p.id},'store',this.value.trim())"></td>
+      <td onclick="event.stopPropagation()"><input type="number" value="${p.price}" step="0.01" min="0" style="width:75px;padding:3px 6px;border:1px solid var(--brd);border-radius:6px;font-size:.83rem" onchange="setOverride(${p.id},'price',parseFloat(this.value)||${p.price})"></td>
+    </tr>`).join('');
+
+  document.getElementById('prod-tbody').innerHTML = rows || '<tr><td colspan="7" style="padding:1.5rem;text-align:center;color:var(--muted)">No products found</td></tr>';
+}
+
+function setOverride(id, field, value) {
+  if (!overrides[id]) overrides[id] = {};
+  overrides[id][field] = value;
+}
+
+function toggleSpons(id) {
+  const cur = getProductState(PRODUCTS.find(p=>p.id===id)).spons;
+  setOverride(id, 'spons', !cur);
+  renderProdTable();
+  renderStats();
+}
+
+async function toggleActive(id) {
+  const cur = getProductState(PRODUCTS.find(p=>p.id===id)).active;
+  const newVal = !cur;
+  setOverride(id, 'active', newVal);
+  renderProdTable();
+  renderStats();
+  try {
+    await db.collection('product_overrides').doc(String(id)).set({ active: newVal }, { merge: true });
+  } catch(e) { toast('❌ ' + e.message); }
+}
+
+async function saveAllOverrides() {
+  try {
+    const batch = db.batch();
+    Object.entries(overrides).forEach(([id, data]) => {
+      batch.set(db.collection('product_overrides').doc(String(id)), data, {merge: true});
+    });
+    await batch.commit();
+    toast('✅ All product changes saved!');
+  } catch(e) {
+    toast('❌ Error: ' + e.message);
+  }
+}
+
+// ── Edit Modal ──
+window._modalCats = [];
+function renderModalCats() {
+  const wrap = document.getElementById('modal-cats-wrap');
+  if (!wrap) return;
+  wrap.innerHTML = ADMIN_CATS.map(c => {
+    const on = window._modalCats.includes(c.id);
+    return `<button type="button" onclick="toggleModalCat('${c.id}')" style="padding:4px 11px;border-radius:50px;border:1.5px solid ${on?'var(--plum)':'var(--brd)'};background:${on?'var(--plum)':'#fff'};color:${on?'#fff':'var(--ink)'};font-size:.76rem;font-weight:${on?700:500};cursor:pointer;white-space:nowrap">${c.label}</button>`;
+  }).join('');
+}
+function toggleModalCat(id) {
+  const i = window._modalCats.indexOf(id);
+  if (i === -1) window._modalCats.push(id); else window._modalCats.splice(i, 1);
+  renderModalCats();
+}
+
+function openAddModal() {
+  document.getElementById('modal-id').value = 'NEW';
+  document.getElementById('modal-title').textContent = 'Add New Product';
+  document.getElementById('modal-preview').src = '';
+  document.getElementById('modal-img').value        = '';
+  document.getElementById('modal-title-inp').value  = '';
+  document.getElementById('modal-store').value      = 'Amazon';
+  document.getElementById('modal-brand').value      = '';
+  document.getElementById('modal-desc').value       = '';
+  document.getElementById('modal-price').value      = '';
+  document.getElementById('modal-badge').value      = '';
+  document.getElementById('modal-url').value        = '';
+  window._modalCats = []; renderModalCats();
+  document.getElementById('modal-tziut').checked    = false;
+  document.getElementById('edit-modal').classList.add('open');
+}
+
+function openModal(id) {
+  const p = getProductState(PRODUCTS.find(x => x.id === id));
+  document.getElementById('modal-id').value = id;
+  document.getElementById('modal-title').textContent = 'Edit: ' + p.title;
+  document.getElementById('modal-preview').src = p.img || '';
+  document.getElementById('modal-img').value        = p.img   || '';
+  document.getElementById('modal-title-inp').value  = p.title || '';
+  document.getElementById('modal-store').value      = p.store || 'Amazon';
+  document.getElementById('modal-brand').value      = p.brand || '';
+  document.getElementById('modal-desc').value       = p.desc  || '';
+  document.getElementById('modal-price').value      = p.price || '';
+  document.getElementById('modal-badge').value      = p.badge || '';
+  document.getElementById('modal-url').value        = p.url   || '';
+  document.getElementById('modal-video').value      = p.video || '';
+  window._modalCats = [...(p.cats || [])]; renderModalCats();
+  document.getElementById('modal-tziut').checked    = !!p.tziut;
+  document.getElementById('edit-modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('edit-modal').classList.remove('open');
+}
+
+async function saveModal() {
+  const rawId = document.getElementById('modal-id').value;
+  const cats = [...(window._modalCats || [])];
+
+  if (rawId === 'NEW') {
+    const newDoc = {
+      title: document.getElementById('modal-title-inp').value.trim(),
+      store: document.getElementById('modal-store').value.trim() || 'Amazon',
+      brand: document.getElementById('modal-brand').value.trim(),
+      desc:  document.getElementById('modal-desc').value.trim(),
+      price: parseFloat(document.getElementById('modal-price').value) || 0,
+      badge: document.getElementById('modal-badge').value.trim(),
+      url:   document.getElementById('modal-url').value.trim(),
+      img:   document.getElementById('modal-img').value.trim(),
+      video: document.getElementById('modal-video').value.trim(),
+      cats,
+      tziut: document.getElementById('modal-tziut').checked,
+      active: true,
+      createdAt: Date.now()
+    };
+    if (!newDoc.title) { toast('❌ Title is required'); return; }
+    try {
+      await db.collection('custom_products').add(newDoc);
+      closeModal();
+      toast('✅ Product added and live on site!');
+    } catch(e) { toast('❌ ' + e.message); }
+    return;
+  }
+
+  const id = parseInt(rawId);
+  setOverride(id, 'img',   document.getElementById('modal-img').value.trim());
+  setOverride(id, 'title', document.getElementById('modal-title-inp').value.trim());
+  setOverride(id, 'store', document.getElementById('modal-store').value.trim());
+  setOverride(id, 'brand', document.getElementById('modal-brand').value.trim());
+  setOverride(id, 'desc',  document.getElementById('modal-desc').value.trim());
+  setOverride(id, 'price', parseFloat(document.getElementById('modal-price').value) || 0);
+  setOverride(id, 'badge', document.getElementById('modal-badge').value.trim());
+  setOverride(id, 'url',   document.getElementById('modal-url').value.trim());
+  setOverride(id, 'video', document.getElementById('modal-video').value.trim());
+  setOverride(id, 'cats', cats);
+  setOverride(id, 'tziut', document.getElementById('modal-tziut').checked);
+  closeModal();
+  renderProdTable();
+  toast('Product updated — click Save Changes to publish.');
+}
+
+function hideProduct() {
+  const id = parseInt(document.getElementById('modal-id').value);
+  if (!confirm('Hide this product? It stays in your list and can be unhidden any time via the Visible toggle.')) return;
+  setOverride(id, 'active', false);
+  closeModal();
+  renderProdTable();
+  renderStats();
+  toast('Product hidden — click Save Changes to publish.');
+}
+
+function getSelectedIds() {
+  return [...document.querySelectorAll('.row-chk:checked')].map(c => parseInt(c.dataset.id));
+}
+function updateBulkBar() {
+  const ids = getSelectedIds();
+  const bar = document.getElementById('bulk-bar');
+  bar.style.display = ids.length ? 'flex' : 'none';
+  document.getElementById('bulk-count').textContent = `${ids.length} selected`;
+  document.getElementById('chk-all').indeterminate = ids.length > 0 && ids.length < document.querySelectorAll('.row-chk').length;
+  document.getElementById('chk-all').checked = ids.length > 0 && ids.length === document.querySelectorAll('.row-chk').length;
+}
+function toggleSelectAll(checked) {
+  document.querySelectorAll('.row-chk').forEach(c => c.checked = checked);
+  updateBulkBar();
+}
+function clearSelection() {
+  document.querySelectorAll('.row-chk').forEach(c => c.checked = false);
+  document.getElementById('chk-all').checked = false;
+  updateBulkBar();
+}
+async function bulkDelete() {
+  const ids = getSelectedIds();
+  if (!ids.length) return;
+  if (!confirm(`Permanently delete ${ids.length} product${ids.length>1?'s':''}?\n\nThey will be removed from the site immediately.`)) return;
+  try {
+    const batch = db.batch();
+    ids.forEach(id => {
+      batch.set(db.collection('product_overrides').doc(String(id)), { deleted: true, active: false }, { merge: true });
+      if (!overrides[id]) overrides[id] = {};
+      overrides[id].deleted = true;
+      overrides[id].active = false;
+    });
+    await batch.commit();
+    clearSelection();
+    renderProdTable();
+    renderStats();
+    toast(`✅ ${ids.length} product${ids.length>1?'s':''} deleted!`);
+  } catch(e) { toast('❌ ' + e.message); }
+}
+async function bulkTziut() {
+  const ids = getSelectedIds();
+  if (!ids.length) return;
+  if (!confirm(`Set tziut warning on ${ids.length} product${ids.length>1?'s':''}?`)) return;
+  try {
+    const batch = db.batch();
+    ids.forEach(id => {
+      batch.set(db.collection('product_overrides').doc(String(id)), { tziut: true }, { merge: true });
+      if (!overrides[id]) overrides[id] = {};
+      overrides[id].tziut = true;
+    });
+    await batch.commit();
+    clearSelection();
+    renderProdTable();
+    toast(`✅ Tziut warning set on ${ids.length} product${ids.length>1?'s':''}!`);
+  } catch(e) { toast('❌ ' + e.message); }
+}
+
+async function deleteProductPermanently() {
+  const id = parseInt(document.getElementById('modal-id').value);
+  const p = PRODUCTS.find(x => x.id === id);
+  if (!confirm(`Permanently delete "${p ? p.title : 'this product'}"?\n\nIt will be removed from the site immediately and won't come back unless you clear the delete flag in Firestore.`)) return;
+  try {
+    await db.collection('product_overrides').doc(String(id)).set({ deleted: true, active: false }, { merge: true });
+    if (!overrides[id]) overrides[id] = {};
+    overrides[id].deleted = true;
+    overrides[id].active  = false;
+    closeModal();
+    renderProdTable();
+    renderStats();
+    toast('✅ Product deleted from site!');
+  } catch(e) { toast('❌ ' + e.message); }
+}
+
+document.getElementById('edit-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('edit-modal')) closeModal();
+});
+
+// ── Giveaway ──
+function toggleGiveawayActive() {
+  gwActive = !gwActive;
+  document.getElementById('gw-active-toggle').classList.toggle('on', gwActive);
+}
+
+async function saveGiveawaySettings() {
+  try {
+    await db.collection('site_settings').doc('giveaway').set({
+      active:    gwActive,
+      finePrint: document.getElementById('gw-fine-print').value.trim(),
+      prizeDesc: document.getElementById('gw-prize-desc').value.trim() || 'Amazon Gift Card'
+    }, {merge: true});
+    toast('✅ Giveaway settings saved!');
+  } catch(e) { toast('❌ ' + e.message); }
+}
+
+let _allEntries = [];
+
+async function exportEntriesCSV() {
+  if (!_allEntries.length) { toast('No entries loaded yet.'); return; }
+  const rows = [['Email','Name','Week','Date']].concat(
+    _allEntries.map(e => [
+      e.email||'',
+      e.name||'',
+      e.week||'',
+      e.ts ? new Date(e.ts).toLocaleDateString() : ''
+    ])
+  );
+  const csv = rows.map(r => r.map(v => '"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'giveaway-entries-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+async function pickWinner() {
+  if (!_allEntries.length) { toast('No entries loaded yet.'); return; }
+  const winner = _allEntries[Math.floor(Math.random() * _allEntries.length)];
+  const date = winner.ts ? new Date(winner.ts).toLocaleDateString() : '—';
+  if (confirm(`🏆 Random winner:\n\n${winner.email||'—'}\nWeek: ${winner.week||'—'}\nEntered: ${date}\n\nSave this as the last winner in Firestore?`)) {
+    try {
+      await db.collection('giveaway_meta').doc('lastWinner').set({ email: winner.email, week: winner.week, ts: Date.now() }, { merge: true });
+      document.getElementById('gw-winner').textContent = winner.email || '—';
+      toast('✅ Winner saved!');
+    } catch(e) { toast('❌ ' + e.message); }
+  }
+}
+
+async function loadGiveawayEntries() {
+  const wrap = document.getElementById('gw-entries-wrap');
+  try {
+    // No orderBy — avoids Firestore index requirement; ts is a JS number so we sort in JS
+    const snap = await db.collection('giveaway_entries').get();
+    if (snap.empty) {
+      document.getElementById('gw-count').textContent = 0;
+      wrap.innerHTML = '<p style="color:var(--muted);font-size:.85rem">No entries yet.</p>';
+      return;
+    }
+    document.getElementById('gw-count').textContent = snap.size;
+    _allEntries = snap.docs.map(d => d.data());
+    const sorted = [..._allEntries].sort((a,b) => (b.ts||0) - (a.ts||0)).slice(0,50);
+    const rows = sorted.map(e => {
+      const date = e.ts ? new Date(e.ts).toLocaleDateString() : '—';
+      return `<tr><td>${e.email||'—'}</td><td>${e.name||'—'}</td><td>${e.week||'—'}</td><td>${date}</td></tr>`;
+    }).join('');
+    wrap.innerHTML = `<table class="entries-table"><thead><tr><th>Email</th><th>Name</th><th>Week</th><th>Date</th></tr></thead><tbody>${rows}</tbody></table>`;
+  } catch(e) {
+    wrap.innerHTML = `<p style="color:var(--red);font-size:.84rem">⚠️ Can't load entries: ${e.message}</p>`;
+  }
+}
+
+// ── Settings ──
+async function saveSettings() {
+  try {
+    const sponsIdsRaw = document.getElementById('s-spons-ids').value;
+    await db.collection('site_settings').doc('main').set({
+      email:       document.getElementById('s-email').value.trim(),
+      tagline:     document.getElementById('s-tagline').value.trim(),
+      twitter:     document.getElementById('s-twitter').value.trim(),
+      tiktok:      document.getElementById('s-tiktok').value.trim(),
+      youtube:     document.getElementById('s-youtube').value.trim(),
+      banner:      document.getElementById('s-banner').value.trim(),
+      bannerColor: document.getElementById('s-banner-color').value,
+      sponsIds:    sponsIdsRaw
+    }, {merge: true});
+    toast('✅ Settings saved!');
+  } catch(e) { toast('❌ ' + e.message); }
+}
+
+// ── Tab nav ──
+function openTab(name, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── Toast ──
+function toast(msg) {
+  const el = document.getElementById('adm-toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>

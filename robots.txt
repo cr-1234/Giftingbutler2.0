@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://giftingbutler-74395.web.app/sitemap.xml
