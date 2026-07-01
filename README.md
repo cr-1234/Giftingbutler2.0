@@ -2,7 +2,7 @@
 
 A gift-discovery web app — curated picks, smart reminders, and family wishlists for every occasion.
 
-Everything is contained in a single file (`index.html`): HTML, CSS, JavaScript, and the logo are all inline, so there are no build steps and no dependencies to install.
+The web app itself is contained in a single file (`index.html`): HTML, CSS, and JavaScript are all inline, with Firebase loaded via CDN, so no build step is required to view or edit it. The repo also includes a Firebase Cloud Functions backend (`functions/`) and native mobile app wrappers built with Capacitor (`android/`, `ios/`) — see [MOBILE_APP.md](MOBILE_APP.md) for those.
 
 ## View it locally
 Just double-click `index.html` — it opens in any web browser.
