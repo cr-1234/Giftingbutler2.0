@@ -52,7 +52,7 @@
   --ease:cubic-bezier(.4,0,.2,1);
   --sb:68px;
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{scroll-behavior:smooth}
 body{font-family:'Inter',sans-serif;background:linear-gradient(165deg,#ddd0f5 0%,#e8dff7 40%,#f0e8fb 100%);background-attachment:fixed;color:var(--ink);line-height:1.6;overflow-x:hidden;position:relative;scrollbar-width:auto;scrollbar-color:rgba(91,45,142,.45) rgba(0,0,0,.06)}
 body::-webkit-scrollbar{width:8px}
@@ -219,7 +219,7 @@ body::-webkit-scrollbar-thumb:hover{background:rgba(91,45,142,.7)}
 /* -- MODALS -- */
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.42);backdrop-filter:blur(8px);z-index:1000;display:none;align-items:center;justify-content:center;padding:1.25rem}
 .ov.open{display:flex}
-.modal{background:#fff;border:1px solid rgba(255,255,255,.85);border-radius:var(--r4);width:100%;max-width:520px;max-height:92vh;overflow-y:auto;position:relative;box-shadow:0 24px 64px rgba(0,0,0,.14),inset 0 1px 0 rgba(255,255,255,1);animation:mIn .2s var(--ease)}
+.modal{background-color:rgba(255,255,255,.55);background-image:linear-gradient(150deg,rgba(255,255,255,.9) 0%,rgba(255,255,255,.4) 40%,rgba(255,255,255,.15) 70%);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);border:1px solid rgba(255,255,255,.9);border-radius:var(--r4);width:100%;max-width:520px;max-height:92vh;overflow-y:auto;position:relative;box-shadow:0 24px 64px rgba(0,0,0,.14),inset 0 1px 1px rgba(255,255,255,1),inset 0 -3px 6px rgba(255,255,255,.3);animation:mIn .2s var(--ease)}
 .modal.wide{max-width:650px}
 @keyframes mIn{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
 .mx{position:absolute;top:.9rem;right:.9rem;width:28px;height:28px;background:var(--parch);border:none;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--ink2);z-index:5}
@@ -284,7 +284,7 @@ body::-webkit-scrollbar-thumb:hover{background:rgba(91,45,142,.7)}
 
 /* Detail */
 .det-grid{display:grid;grid-template-columns:1fr 1.05fr;gap:1.4rem}
-.diw{border-radius:var(--r3);overflow:hidden;background:#fff}
+.diw{border-radius:var(--r3);overflow:hidden;background:#fff;mix-blend-mode:multiply}
 .dimg{width:100%;display:block;object-fit:contain;background:transparent;max-height:420px}
 .dinf{display:flex;flex-direction:column;gap:.48rem}
 .dbrand{font-size:9px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3)}
@@ -316,7 +316,11 @@ body::-webkit-scrollbar-thumb:hover{background:rgba(91,45,142,.7)}
 .mbar{display:none;position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);width:auto;height:52px;background:rgba(255,255,255,.12);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.18);border-radius:50px;z-index:400;align-items:center;padding:0 1.2rem;gap:1.2rem;box-shadow:none}
 .mb-btn{background:none;border:none;cursor:pointer;padding:.35rem;border-radius:50%;transition:all .15s;display:flex;align-items:center;justify-content:center}
 .mb-btn svg{width:22px;height:22px}
-.mb-home{color:rgba(79,70,229,.5)}.mb-wl{color:rgba(192,57,90,.5)}.mb-bell{color:rgba(196,154,40,.5)}.mb-gift{color:rgba(91,45,142,.5)}.mb-signin{color:var(--plum)!important;background:rgba(91,45,142,.12)!important;border:1.5px solid rgba(91,45,142,.3)!important}
+.mb-btn{width:40px;height:40px}
+.mb-search{color:rgba(79,70,229,.8);background:rgba(79,70,229,.12);border:1px solid rgba(79,70,229,.18)}
+.mb-wl{color:#C0395A;background:rgba(192,57,90,.15);border:1px solid rgba(192,57,90,.2)}
+.mb-bell{color:var(--ink3);background:rgba(0,0,0,.035);border:1px solid rgba(0,0,0,.06)}
+.mb-gift{color:#5B2D8E;background:rgba(91,45,142,.15);border:1px solid rgba(91,45,142,.2)}
 .mb-btn:hover{transform:scale(1.15)}
 
 /* -- LIQUID GLASS BTT (mobile only) -- */
@@ -1170,21 +1174,21 @@ body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;bac
 /* Pastel tints matching the reference exactly */
 .s-home .s-ico{background:rgba(195,190,240,.32)!important;color:#5B52C4!important;border-color:rgba(180,170,235,.4)!important}
 .s-wl .s-ico{background:rgba(240,185,200,.28)!important;color:#C0395A!important;border-color:rgba(230,170,190,.35)!important}
-.s-bell .s-ico{background:rgba(240,225,175,.30)!important;color:#8A6A10!important;border-color:rgba(230,215,160,.4)!important}
+.s-bell .s-ico{background:rgba(0,0,0,.035)!important;color:var(--ink3)!important;border-color:rgba(0,0,0,.06)!important}
 .s-gift .s-ico{background:rgba(210,195,235,.28)!important;color:#5B2D8E!important;border-color:rgba(200,185,225,.35)!important}
 
 .s-btn:hover .s-ico{transform:translateY(-2px)!important;box-shadow:0 6px 16px rgba(40,20,70,.12),inset 0 1px 0 rgba(255,255,255,.95)!important}
 
-/* Sign-in at bottom — plain icon, matches the other sidebar buttons */
+/* Sign-in at bottom — soft neutral gray circle */
 .sb-signin{
   width:48px!important;height:48px!important;border-radius:50%!important;
-  background:transparent!important;background-image:none!important;
+  background:rgba(0,0,0,.035)!important;background-image:none!important;
   backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
-  border:none!important;
+  border:1px solid rgba(0,0,0,.06)!important;
   box-shadow:none!important;
   color:var(--ink3)!important;
 }
-.sb-signin:hover{color:var(--plum)!important;transform:translateY(-2px)!important}
+.sb-signin:hover{color:var(--plum)!important;transform:translateY(-2px)!important;background:rgba(0,0,0,.06)!important}
 
 /* Spacing */
 .s-nav{gap:1.1rem!important}
@@ -1223,17 +1227,16 @@ body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;bac
 .sidebar.expanded .s-btn{flex-direction:row!important;width:100%!important;justify-content:flex-start!important;padding:.28rem .45rem!important;gap:.55rem!important;border-radius:12px!important;height:auto!important}
 .sidebar.expanded .s-btn:hover{background:rgba(91,45,142,.06)!important}
 .sidebar.expanded .s-btn:hover .s-ico{transform:none!important}
-.sidebar.expanded .sb-bottom{width:100%;padding:0 .5rem .75rem;gap:4px}
+.sidebar.expanded .sb-bottom{width:100%;padding:0 .5rem 52px;gap:4px}
 .sidebar.expanded .sb-signin{flex-direction:row!important;width:100%!important;justify-content:flex-start!important;padding:.28rem .45rem!important;gap:.55rem!important;border-radius:12px!important;height:auto!important;aspect-ratio:unset!important;min-width:unset!important;min-height:unset!important;margin:0!important}
 .sidebar.expanded .sb-signin:hover{transform:none!important}
 .sidebar.expanded .sb-name{display:none}
 .sb-open .main{margin-left:210px!important}
 .sb-open footer{margin-left:210px!important}
-/* Sign-in icon — teal to match other colored sidebar icons */
-.sb-signin .s-ico{background:rgba(16,163,127,.15)!important;color:#0d9373!important;border:1px solid rgba(16,163,127,.22)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.85)!important;backdrop-filter:blur(8px)!important;width:48px!important;height:48px!important;border-radius:50%!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important}
-.sb-signin:hover .s-ico{transform:translateY(-2px)!important;box-shadow:0 6px 16px rgba(16,163,127,.2),inset 0 1px 0 rgba(255,255,255,.9)!important}
+.sb-signin .s-ico{background:transparent!important;color:inherit!important;border:none!important;box-shadow:none!important;backdrop-filter:none!important;width:48px!important;height:48px!important;border-radius:50%!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important}
+.sb-signin:hover .s-ico{transform:translateY(-2px)!important}
 /* bottom-bar sign-in: fixed size so the signed-in avatar can't collapse */
-.mb-signin{width:38px!important;height:38px!important;overflow:hidden;color:var(--plum)!important;background:transparent!important;border-radius:50%!important;border:none!important;box-shadow:none!important;display:flex!important;align-items:center!important;justify-content:center!important}
+.mb-signin{width:38px!important;height:38px!important;overflow:hidden;color:var(--ink3)!important;background:rgba(0,0,0,.035)!important;border-radius:50%!important;border:1px solid rgba(0,0,0,.06)!important;box-shadow:none!important;display:flex!important;align-items:center!important;justify-content:center!important}
 .mb-signin svg{width:22px;height:22px;stroke:var(--plum);fill:none}
 .mb-signin img{width:28px!important;height:28px!important;border-radius:50%;object-fit:cover}
 .mb-search{color:#4F46E5}
