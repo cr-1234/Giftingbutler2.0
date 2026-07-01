@@ -1,8 +1,0 @@
-{
-  "appId": "com.giftingbutler.app",
-  "appName": "Gifting Butler",
-  "webDir": "mobile-web",
-  "server": {
-    "androidScheme": "https"
-  }
-}

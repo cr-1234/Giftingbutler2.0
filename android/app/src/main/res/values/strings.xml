@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">Gifting Butler</string>
-    <string name="title_activity_main">Gifting Butler</string>
-    <string name="package_name">com.giftingbutler.app</string>
-    <string name="custom_url_scheme">com.giftingbutler.app</string>
-</resources>
